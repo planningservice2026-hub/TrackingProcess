@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Part Line Monitoring System</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background-color: #0f172a; color: #f8fafc; padding: 24px; -webkit-font-smoothing: antialiased;
+        }
+        .monitor-container {
+            width: 100%; max-width: 1400px; margin: 0 auto; background-color: #1e293b;
+            border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); border: 1px solid #334155; overflow: hidden;
+        }
+        .monitor-header {
+            background-color: #0f172a; padding: 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid #38bdf8;
+        }
+        .monitor-title { color: #ffffff; font-size: 22px; font-weight: 800; letter-spacing: 0.05em; }
+        .btn-refresh {
+            background-color: #38bdf8; color: #0f172a; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: all 0.2s;
+        }
+        .btn-refresh:hover { background-color: #7dd3fc; }
+        .kpi-dashboard {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; padding: 20px 24px; background-color: #111827; border-bottom: 1px solid #334155;
+        }
+        .kpi-card { background: #1e293b; padding: 16px; border-radius: 10px; border: 1px solid #334155; }
+        .kpi-title { font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: bold; }
+        .kpi-value { font-size: 24px; font-weight: 800; color: #ffffff; margin-top: 4px; }
+        .search-box { padding: 16px 24px; background-color: #1e293b; border-bottom: 1px solid #334155; display: flex; gap: 12px; align-items: center; }
+        .search-input { padding: 10px 16px; border-radius: 6px; border: 1px solid #475569; width: 300px; font-size: 14px; background-color: #0f172a; color: #ffffff; outline: none; }
+        .table-wrapper { overflow-x: auto; padding: 16px; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
+        th { background-color: #0f172a; color: #94a3b8; font-weight: 700; padding: 16px; text-transform: uppercase; font-size: 11px; }
+        td { padding: 16px; border-bottom: 1px solid #334155; color: #cbd5e1; vertical-align: middle; }
+        .clickable-row { cursor: pointer; transition: background-color 0.2s; }
+        .clickable-row:hover { background: linear-gradient(90deg, #1e293b 0%, #24344d 100%); }
+        .click-hint { font-size: 11px; color: #38bdf8; display: block; margin-top: 4px; font-weight: bold; animation: pulse 2s infinite; }
+        .progress-container { width: 120px; background-color: #334155; border-radius: 4px; overflow: hidden; }
+        .progress-bar { background-color: #10b981; height: 6px; border-radius: 4px; }
+        .timeline-flow { display: flex; align-items: center; gap: 4px; background: #0f172a; padding: 8px; border-radius: 8px; }
+        .step { flex: 1; padding: 6px; background-color: #1e293b; border-radius: 4px; font-size: 11px; text-align: center; border: 1px solid #334155; }
+        .step.done { background-color: rgba(22, 163, 74, 0.2); border-color: #22c55e; color: #4ade80; }
+        .step.wip { background-color: rgba(2, 132, 199, 0.3); border-color: #38bdf8; color: #38bdf8; font-weight: bold; animation: pulse 2s infinite; }
+        .step.pending { color: #64748b; }
+        .step-time { display: block; font-family: monospace; font-size: 9px; color: #94a3b8; margin-top: 2px;}
+        .arrow-next { color: #475569; font-size: 11px; }
+        .part-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-top: 4px; background-color: #475569; color: white; }
+        .badge-automotive { background-color: #3b82f6; }
+        .badge-electronics { background-color: #a855f7; }
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); justify-content: center; align-items: center; z-index: 999; padding: 20px;
+        }
+        .modal-content {
+            background-color: #1e293b; width: 100%; max-width: 1100px; border-radius: 16px;
+            border: 2px solid #475569; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); overflow: hidden; animation: slideUp 0.3s ease-out;
+        }
+        .modal-header { background-color: #0f172a; padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #38bdf8; }
+        .modal-close { background: none; border: none; color: #94a3b8; font-size: 28px; cursor: pointer; }
+        .modal-close:hover { color: #f87171; }
+        .modal-body { padding: 24px; }
+        .detail-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-top: 16px; }
+        .detail-step-card { background-color: #0f172a; padding: 14px; border-radius: 8px; border: 1px solid #334155; text-align: center; }
+        .detail-step-card.done { border-color: #22c55e; background-color: rgba(22, 163, 74, 0.05); color: #4ade80; }
+        .detail-step-card.wip { border-color: #38bdf8; background-color: rgba(2, 132, 199, 0.1); color: #38bdf8; font-weight: bold; animation: cardPulse 2s infinite; }
+        .detail-step-card.pending { opacity: 0.3; color: #64748b; }
+        @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+        @keyframes cardPulse { 0%, 100% { border-color: #38bdf8; } 50% { border-color: #0284c7; } }
+        @keyframes slideUp { from { transform: translateY(12px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <div class="monitor-container">
+        <div class="monitor-header">
+            <div>
+                <div class="monitor-title">📊 SMART MULTI-PART MONITOR BOARD</div>
+                <div style="font-size: 12px; color: #94a3b8; margin-top: 4px;">ระบบมอนิเตอร์อัจฉริยะ (ย่อหน้าต่างอัตโนมัติ / คลิกที่แถวเพื่อกางดูไทม์ไลน์ 10 สถานีดิบ)</div>
+            </div>
+            <button onclick="fetchLiveStoreData()" class="btn-refresh">🔄 REFRESH BOARD</button>
+        </div>
+
+        <div class="kpi-dashboard">
+            <div class="kpi-card"><div class="kpi-title">📦 Total Active Orders</div><div class="kpi-value" id="kpi_total">0</div></div>
+            <div class="kpi-card"><div class="kpi-title">⚡ Running Jobs (WIP)</div><div class="kpi-value" id="kpi_wip" style="color:#38bdf8;">0</div></div>
+            <div class="kpi-card"><div class="kpi-title">🟢 Total Good (FG)</div><div class="kpi-value" id="kpi_fg" style="color:#4ade80;">0</div></div>
+            <div class="kpi-card"><div class="kpi-title">🔴 Total Defects (NG)</div><div class="kpi-value" id="kpi_ng" style="color:#f87171;">0</div></div>
+        </div>
+
+        <div class="search-box">
+            <span style="font-size:14px; font-weight:bold; color:#94a3b8;">🔍 ตัวกรองค้นหา:</span>
+            <input type="text" id="searchInput" class="search-input" onkeyup="filterTable()" placeholder="ค้นหาเลขที่ออเดอร์, ชื่อพาร์ท...">
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 10%;">วันที่ลงคิว</th>
+                        <th style="width: 15%;">ใบงานผลิต (Order)</th>
+                        <th style="width: 25%;">ข้อมูลสินค้า / เครื่องจักร</th>
+                        <th style="width: 35%;">สเตตัสกระบวนการผลิต (หลัก)</th>
+                        <th style="width: 15%;">ความคืบหน้า (QA)</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr><td colspan="5" style="text-align:center; padding:40px; color:#94a3b8;">กำลังสตรีมข้อมูลเรียลไทม์จากระบบ ERP Cloud...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="detailModal" class="modal-overlay" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div>
+                    <h2 id="modalOrderNo" style="color:white; font-size:18px; font-weight:800;">ORDER DETAILS</h2>
+                    <p id="modalPartName" style="color:#94a3b8; font-size:13px; margin-top:2px;"></p>
+                </div>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <h3 style="color: #38bdf8; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: bold;">ผังลำดับไทม์ไลน์สถานีการผลิตทั้ง 10 ขั้นตอน (สแกนสดจากแท็บโรงงาน)</h3>
+                <div class="detail-grid" id="modalTimelineGrid"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 🌟 แก้ไข: วางลิงก์ URL เว็บแอปของพี่ที่ได้มาจาก Google Apps Script ในช่องด้านล่างนี้ครับ
+        const BACKEND_URL = "https://script.google.com/macros/s/AKfycbylLzppA93GezUYVHQ4E6414a_Nwic0V80C0-mgo6vbjVvNcFGqbMCQ7E87A-tEVVLU/exec"; 
+
+        let globalCachedStore = [];
+        document.addEventListener("DOMContentLoaded", fetchLiveStoreData);
+
+        function fetchLiveStoreData() {
+            document.getElementById("tableBody").innerHTML = `<tr><td colspan="5" style="text-align:center; padding:40px; color:#38bdf8; font-weight:bold; animation:pulse 1s infinite;">🔄 REFRESHING CLOUD STORAGE CORRELATION...</td></tr>`;
+            
+            fetch(BACKEND_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain" },
+                body: JSON.stringify({ action: "getLiveTrackingData" })
+            })
+            .then(res => res.json())
+            .then(response => {
+                if(response.status === "success") {
+                    globalCachedStore = response.data;
+                    renderTableDashboard(globalCachedStore);
+                }
+            })
+            .catch(err => {
+                document.getElementById("tableBody").innerHTML = `<tr><td colspan="5" style="text-align:center; padding:40px; color:#f87171; font-weight:bold;">❌ คอนเน็กชั่นผิดพลาด ไม่สามารถดึงฐานข้อมูลได้: ${err}</td></tr>`;
+            });
+        }
+
+        function renderTableDashboard(dataArray) {
+            let html = "";
+            let totalActive = dataArray.length;
+            let wipCount = 0; let totalFg = 0; let totalNg = 0;
+            
+            if(totalActive === 0) {
+                document.getElementById("tableBody").innerHTML = `<tr><td colspan="5" style="text-align:center; padding:40px; color:#94a3b8;">📭 ไม่พบประวัติออเดอร์ในตารางข้อมูล</td></tr>`;
+                return;
+            }
+            
+            dataArray.forEach((row, index) => {
+                totalFg += row.fgQty; totalNg += row.ngQty;
+                let isWip = Object.values(row.times).some(t => t === "รันอยู่");
+                if(isWip) wipCount++;
+                
+                let pClass = "part-badge";
+                if(row.category === "Automotive") pClass += " badge-automotive";
+                if(row.category === "Electronics") pClass += " badge-electronics";
+                
+                let percent = 0;
+                if(row.totalQty > 0) percent = Math.min(100, Math.round((row.fgQty / row.totalQty) * 100));
+                
+                html += `
+                    <tr class="clickable-row" onclick="openExtendedModal(${index})">
+                        <td>${row.date}</td>
+                        <td style="font-family:monospace; font-weight:bold; color:#38bdf8; font-size:15px;">
+                            ${row.orderNo}
+                            <span class="click-hint">📄 CLICK DETAIL</span>
+                        </td>
+                        <td>
+                            <div style="font-weight:bold; color:white;">${row.partName}</div>
+                            <div style="font-size:11px; color:#94a3b8; margin-top:2px;">PN: ${row.partNo} | MC: ${row.macNo || '-'}</div>
+                            <span class="${pClass}">${row.category}</span>
+                        </td>
+                        <td>
+                            <div class="timeline-flow">
+                                ${buildMiniStepBox("🏭 MAC", row.times.mac)}
+                                <span class="arrow-next">➔</span>
+                                ${buildMiniStepBox("💮 P1", row.times.p1)}
+                                <span class="arrow-next">➔</span>
+                                ${buildMiniStepBox("💮 P2", row.times.p2)}
+                                <span class="arrow-next">➔</span>
+                                ${buildMiniStepBox("✂️ CUT1", row.times.cut1)}
+                                <span class="arrow-next">➔</span>
+                                ${buildMiniStepBox("🔥 STAMP", row.times.stamp)}
+                            </div>
+                        </td>
+                        <td>
+                            <div style="font-weight:bold; margin-bottom:4px; font-size:13px; color:#10b981;">FG: ${row.fgQty} / ${row.totalQty}</div>
+                            <div class="progress-container"><div class="progress-bar" style="width: ${percent}%;"></div></div>
+                            <div style="font-size:11px; color:#f87171; margin-top:4px; font-weight:600;">Defect NG: ${row.ngQty} ชิ้น</div>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            document.getElementById("tableBody").innerHTML = html;
+            document.getElementById("kpi_total").innerText = totalActive;
+            document.getElementById("kpi_wip").innerText = wipCount;
+            document.getElementById("kpi_fg").innerText = totalFg;
+            document.getElementById("kpi_ng").innerText = totalNg;
+        }
+
+        function buildMiniStepBox(label, status) {
+            let cls = "step pending";
+            if (status === "จบงาน") cls = "step done";
+            if (status === "รันอยู่") cls = "step wip";
+            return `<div class="${cls}">${label}</div>`;
+        }
+
+        function openExtendedModal(index) {
+            let item = globalCachedStore[index];
+            document.getElementById('modalOrderNo').innerText = "📄 FACTORY ROUTING TRACK - ORDER #" + item.orderNo;
+            document.getElementById('modalPartName').innerText = `พาร์ทสินค้า: ${item.partName} (${item.partNo}) | รหัสเป้าหมายยอดผลิต: ${item.totalQty} ชิ้น`;
+            
+            let pipeline = [
+                { id: 'mac', name: '🏭 1. Machine Run' }, { id: 'p1', name: '💮 2. Punching 1' },
+                { id: 'p2', name: '💮 3. Punching 2' }, { id: 'p3', name: '💮 4. Punching 3' },
+                { id: 'p4', name: '💮 5. Punching 4' }, { id: 'cut1', name: '✂️ 6. Cutting Line 1' },
+                { id: 'cut2', name: '✂️ 7. Cutting Line 2' }, { id: 'cut3', name: '✂️ 8. Cutting Line 3' },
+                { id: 'cut4', name: '✂️ 9. Cutting Line 4' }, { id: 'stamp', name: '🔥 10. Hotstamping' }
+            ];
+            
+            let gridHtml = "";
+            pipeline.forEach(step => {
+                let currentStatus = item.times[step.id] || "รอคิว";
+                let cls = "detail-step-card pending";
+                let statusText = "📭 ลำดับคิวว่าง";
+                
+                if(currentStatus === "จบงาน") { cls = "detail-step-card done"; statusText = "🟢 COMPLETED (จบงาน)"; }
+                else if(currentStatus === "รันอยู่") { cls = "detail-step-card wip"; statusText = "⚡ PROCESSING (กำลังทำ)"; }
+                
+                gridHtml += `
+                    <div class="${cls}">
+                        <div style="font-weight: bold; font-size: 14px; margin-bottom: 4px;">${step.name}</div>
+                        <div style="font-size: 11px; margin-bottom: 6px;">${statusText}</div>
+                    </div>
+                `;
+            });
+            document.getElementById('modalTimelineGrid').innerHTML = gridHtml;
+            document.getElementById('detailModal').style.display = 'flex';
+        }
+
+        function closeModal() { document.getElementById('detailModal').style.display = 'none'; }
+        
+        function filterTable() {
+            let input = document.getElementById("searchInput").value.toUpperCase();
+            let rows = document.getElementById("tableBody").getElementsByTagName("tr");
+            for (let i = 0; i < rows.length; i++) {
+                if(!rows[i].classList.contains('clickable-row')) continue;
+                let text = rows[i].textContent || rows[i].innerText;
+                rows[i].style.display = text.toUpperCase().includes(input) ? "" : "none";
+            }
+        }
+    </script>
+</body>
+</html>
