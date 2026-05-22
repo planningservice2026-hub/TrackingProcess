@@ -65,7 +65,7 @@
         .btn-action:active { transform: translateY(1px); }
         .btn-back { background-color: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 8px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
         .btn-back:hover { background-color: #e2e8f0; color: #1e293b; }
-        .camera-container { border-top: 1px dashed #e2e8f0; padding-top: 16px; margin-top: 20px; text-align: center; }
+        .camera-container { border-bottom: 1px dashed #e2e8f0; padding-bottom: 16px; margin-bottom: 20px; text-align: center; }
         .btn-camera {
             background-color: #ffffff; color: #475569; border: 1px solid #cbd5e1; padding: 10px 16px; border-radius: 8px;
             font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
@@ -124,6 +124,10 @@
                 <span style="font-size: 11px; color: #0284c7; font-weight: 700; font-family: monospace; text-transform: uppercase;">Sequence // Start_Operation</span>
                 <button onclick="clearAndBack()" class="btn-back">⬅️ BACK</button>
             </div>
+            <div class="camera-container">
+                <button onclick="toggleCameraArea('start')" class="btn-camera">📷 Open Scanner Camera (สแกนผ่านกล้อง)</button>
+                <div id="start_camera_box" class="hidden camera-stream-box"><div id="start_reader" style="width:100%;"></div></div>
+            </div>
             <div class="input-box-wrapper">
                 <label class="section-title">📥 Barcode Gateway Input</label>
                 <div style="display: flex; gap: 8px;">
@@ -164,10 +168,6 @@
                 </select>
                 <button onclick="submitStartData()" id="btn_submit_start" class="btn-action btn-action-start">🛫 TRANSMIT START DATA</button>
             </div>
-            <div class="camera-container">
-                <button onclick="toggleCameraArea('start')" class="btn-camera">📷 Open Scanner Camera (สแกนผ่านกล้อง)</button>
-                <div id="start_camera_box" class="hidden camera-stream-box"><div id="start_reader" style="width:100%;"></div></div>
-            </div>
         </div>
 
         <div id="endPage" class="page">
@@ -175,12 +175,9 @@
                 <span style="font-size: 11px; color: #1e293b; font-weight: 700; font-family: monospace; text-transform: uppercase;">Sequence // Close_Operation</span>
                 <button onclick="clearAndBack()" class="btn-back">⬅️ BACK</button>
             </div>
-            <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 16px; border-radius: 12px; margin-bottom: 16px;">
-                <label class="section-title">📊 Production Output QA Counter</label>
-                <div class="grid-2">
-                    <div><span style="color:#16a34a; font-size:11px; font-weight:700; display:block; margin-bottom:4px;">FG QTY (ชิ้นงานดี)</span><input type="number" id="e_fg" style="text-align:center; font-size:20px; color:#16a34a; font-weight:700;" placeholder="0"></div>
-                    <div><span style="color:#dc2626; font-size:11px; font-weight:700; display:block; margin-bottom:4px;">NG QTY (ชิ้นงานเสีย)</span><input type="number" id="e_ng" style="text-align:center; font-size:20px; color:#dc2626; font-weight:700;" placeholder="0"></div>
-                </div>
+            <div class="camera-container">
+                <button onclick="toggleCameraArea('end')" class="btn-camera">📷 Open Scanner Camera (สแกนผ่านกล้อง)</button>
+                <div id="end_camera_box" class="hidden camera-stream-box"><div id="end_reader" style="width:100%;"></div></div>
             </div>
             <div class="input-box-wrapper" style="border-left: 4px solid #0f172a;">
                 <label class="section-title">📥 Barcode Gateway Input</label>
@@ -189,12 +186,19 @@
                     <button onclick="manualTrigger('end')" style="background-color: #0f172a; color: #ffffff; border: none; padding: 0 16px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer;">FETCH</button>
                 </div>
             </div>
-            <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 16px; border-radius: 12px; margin-bottom: 20px;">
+            
+            <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 16px; border-radius: 12px; margin-bottom: 16px;">
                 <div class="section-title" style="color: #0f172a;">🔍 Bound Target Verification</div>
-                <input type="text" id="e_order_no" class="input-disabled" placeholder="[ORDER NO]" readonly style="margin-bottom:8px; font-weight:700;">
-                <input type="text" id="e_part_name" class="input-disabled" placeholder="[PART NAME]" readonly>
-                <input type="hidden" id="e_part_no"><input type="hidden" id="e_total_qty">
+                <div class="grid-2">
+                    <div><span style="color:#64748b; font-size:10px; font-weight:700; display:block; margin-bottom:4px;">ORDER NO.</span><input type="text" id="e_order_no" class="input-disabled" readonly></div>
+                    <div><span style="color:#64748b; font-size:10px; font-weight:700; display:block; margin-bottom:4px;">PART NAME</span><input type="text" id="e_part_name" class="input-disabled" readonly></div>
+                </div>
+                <div class="grid-2">
+                    <div><span style="color:#64748b; font-size:10px; font-weight:700; display:block; margin-bottom:4px;">PART NO.</span><input type="text" id="e_part_no" class="input-disabled" readonly></div>
+                    <div><span style="color:#64748b; font-size:10px; font-weight:700; display:block; margin-bottom:4px;">TOTAL QTY</span><input type="text" id="e_total_qty" class="input-disabled" readonly></div>
+                </div>
             </div>
+
             <div style="margin-bottom: 16px;">
                 <label class="section-title">⚙️ Select Completed Production Stage</label>
                 <select id="end_process_select" style="margin-bottom: 16px;">
@@ -210,18 +214,21 @@
                     <option value="cut4_endtime" id="e_opt_cut4_endtime">✂️ จบ Cut 4 (X)</option>
                     <option value="hotstamp_endtime" id="e_opt_hotstamp_endtime">🔥 จบ Hotstamp (Z)</option>
                 </select>
-                <button onclick="submitEndData()" id="btn_submit_end" class="btn-action btn-action-end">🏁 TRANSMIT COMPLETION DATA</button>
             </div>
-            <div class="camera-container">
-                <button onclick="toggleCameraArea('end')" class="btn-camera">📷 Open Scanner Camera (สแกนผ่านกล้อง)</button>
-                <div id="end_camera_box" class="hidden camera-stream-box"><div id="end_reader" style="width:100%;"></div></div>
+
+            <div style="background-color: #f1f5f9; border: 1px solid #cbd5e1; padding: 16px; border-radius: 12px; margin-bottom: 20px;">
+                <label class="section-title">📊 Production Output QA Counter</label>
+                <div class="grid-2">
+                    <div><span style="color:#16a34a; font-size:11px; font-weight:700; display:block; margin-bottom:4px;">FG QTY (ชิ้นงานดี)</span><input type="number" id="e_fg" style="text-align:center; font-size:20px; color:#16a34a; font-weight:700;" placeholder="0"></div>
+                    <div><span style="color:#dc2626; font-size:11px; font-weight:700; display:block; margin-bottom:4px;">NG QTY (ชิ้นงานเสีย)</span><input type="number" id="e_ng" style="text-align:center; font-size:20px; color:#dc2626; font-weight:700;" placeholder="0"></div>
+                </div>
+                <button onclick="submitEndData()" id="btn_submit_end" class="btn-action btn-action-end" style="margin-top:10px;">🏁 TRANSMIT COMPLETION DATA</button>
             </div>
         </div>
     </div>
 
     <script>
-        // 🌟 แก้ไข: วางลิงก์ URL เว็บแอปของพี่ที่ได้มาจาก Google Apps Script ในช่องด้านล่างนี้ครับ
-        const BACKEND_URL = "https://script.google.com/macros/s/AKfycbylLzppA93GezUYVHQ4E6414a_Nwic0V80C0-mgo6vbjVvNcFGqbMCQ7E87A-tEVVLU/exec"; 
+        const BACKEND_URL = "https://script.google.com/macros/s/AKfycbwiCEuolBXafbj77B9ivS9wzbSWXxQGv6lmp49u817AALLDNQ9FyqWsCgxUeWe2oA8/exec"; 
 
         let html5QrcodeScanner = null;
         
@@ -348,6 +355,7 @@
                 if(eEl) { eEl.style.color = ""; eEl.style.backgroundColor = ""; }
             });
             
+            // ... (keep original reset strings as they were)
             document.getElementById('s_opt_mac_starttime').innerText = "🏭 เริ่มเดินเครื่องจักร (G)";
             document.getElementById('s_opt_punch1_starttime').innerText = "💮 เริ่ม Punch 1 (I)";
             document.getElementById('s_opt_punch2_starttime').innerText = "💮 เริ่ม Punch 2 (K)";
