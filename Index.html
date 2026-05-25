@@ -2,461 +2,302 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Enterprise Process Tracking Terminal</title>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Part Line Monitoring System</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f1f5f9; color: #1e293b; min-height: 100vh; 
-            display: flex; align-items: center; justify-content: center; padding: 16px;
-            -webkit-font-smoothing: antialiased;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background-color: #0f172a; color: #f8fafc; padding: 24px; -webkit-font-smoothing: antialiased;
         }
-        .container {
-            width: 100%; max-width: 500px; background-color: #ffffff; border-radius: 16px;
-            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.05);
-            border: 1px solid #e2e8f0; overflow: hidden;
+        .monitor-container {
+            width: 100%; max-width: 1400px; margin: 0 auto; background-color: #1e293b;
+            border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); border: 1px solid #334155; overflow: hidden;
         }
-        .header {
-            background-color: #0f172a; padding: 16px 24px; display: flex;
-            justify-content: space-between; align-items: center; border-bottom: 3px solid #0284c7;
+        .monitor-header {
+            background-color: #0f172a; padding: 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid #38bdf8;
         }
-        .header-title { font-size: 14px; font-weight: 700; letter-spacing: 0.05em; color: #ffffff; }
-        .header-subtitle { font-size: 10px; color: #94a3b8; font-family: monospace; margin-top: 2px; }
-        .station-badge {
-            font-size: 11px; color: #0284c7; background-color: #f0f9ff;
-            padding: 6px 12px; border-radius: 6px; font-weight: 700; border: 1px solid #bae6fd;
+        .monitor-title { color: #ffffff; font-size: 22px; font-weight: 800; letter-spacing: 0.05em; }
+        .btn-refresh {
+            background-color: #38bdf8; color: #0f172a; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: all 0.2s;
         }
-        .page { display: none; padding: 24px; }
-        .page.active { display: block; }
-        .btn-menu {
-            width: 100%; padding: 24px; border-radius: 12px; font-size: 18px; font-weight: 700; cursor: pointer; border: 1px solid #e2e8f0;
-            transition: all 0.2s ease; display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; text-align: left;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        .btn-refresh:hover { background-color: #7dd3fc; }
+        .kpi-dashboard {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; padding: 20px 24px; background-color: #111827; border-bottom: 1px solid #334155;
         }
-        .btn-menu-start { background-color: #ffffff; color: #0284c7; border-left: 6px solid #0284c7; }
-        .btn-menu-start:hover { background-color: #f0f9ff; }
-        .btn-menu-end { background-color: #ffffff; color: #0f172a; border-left: 6px solid #0f172a; }
-        .btn-menu-end:hover { background-color: #f8fafc; }
-        .btn-menu:active { transform: scale(0.99); }
-        .btn-menu span.desc { display: block; font-size: 12px; font-weight: 400; color: #64748b; margin-top: 4px; }
-        .section-title {
-            font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; margin-bottom: 10px;
-            display: flex; align-items: center; gap: 6px;
+        .kpi-card { background: #1e293b; padding: 16px; border-radius: 10px; border: 1px solid #334155; }
+        .kpi-title { font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: bold; }
+        .kpi-value { font-size: 24px; font-weight: 800; color: #ffffff; margin-top: 4px; }
+        .search-box { padding: 16px 24px; background-color: #1e293b; border-bottom: 1px solid #334155; display: flex; gap: 12px; align-items: center; }
+        .search-input { padding: 10px 16px; border-radius: 6px; border: 1px solid #475569; width: 300px; font-size: 14px; background-color: #0f172a; color: #ffffff; outline: none; }
+        .table-wrapper { overflow-x: auto; padding: 16px; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
+        th { background-color: #0f172a; color: #94a3b8; font-weight: 700; padding: 16px; text-transform: uppercase; font-size: 11px; }
+        td { padding: 16px; border-bottom: 1px solid #334155; color: #cbd5e1; vertical-align: middle; }
+        .clickable-row { cursor: pointer; transition: background-color 0.2s; }
+        .clickable-row:hover { background: linear-gradient(90deg, #1e293b 0%, #24344d 100%); }
+        .click-hint { font-size: 11px; color: #38bdf8; display: block; margin-top: 4px; font-weight: bold; animation: pulse 2s infinite; }
+        .progress-container { width: 120px; background-color: #334155; border-radius: 4px; overflow: hidden; }
+        .progress-bar { background-color: #10b981; height: 6px; border-radius: 4px; }
+        .timeline-flow { display: flex; align-items: center; gap: 4px; background: #0f172a; padding: 8px; border-radius: 8px; }
+        .step { flex: 1; padding: 6px; background-color: #1e293b; border-radius: 4px; font-size: 11px; text-align: center; border: 1px solid #334155; }
+        .step.done { background-color: rgba(22, 163, 74, 0.2); border-color: #22c55e; color: #4ade80; }
+        .step.wip { background-color: rgba(2, 132, 199, 0.3); border-color: #38bdf8; color: #38bdf8; font-weight: bold; animation: pulse 2s infinite; }
+        .step.pending { color: #64748b; }
+        .step-time { display: block; font-family: monospace; font-size: 9px; color: #94a3b8; margin-top: 2px;}
+        .arrow-next { color: #475569; font-size: 11px; }
+        .part-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-top: 4px; background-color: #475569; color: white; }
+        .badge-automotive { background-color: #3b82f6; }
+        .badge-electronics { background-color: #a855f7; }
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); justify-content: center; align-items: center; z-index: 999; padding: 20px;
         }
-        .input-box-wrapper { background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 16px; border-radius: 12px; margin-bottom: 20px; }
-        input[type=text], input[type=number], select {
-            width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #cbd5e1; background-color: #ffffff; color: #0f172a;
-            font-size: 16px; font-weight: 600; outline: none; transition: all 0.15s ease;
+        .modal-content {
+            background-color: #1e293b; width: 100%; max-width: 1100px; border-radius: 16px;
+            border: 2px solid #475569; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); overflow: hidden; animation: slideUp 0.3s ease-out;
         }
-        input[type=text]:focus, input[type=number]:focus, select:focus { border-color: #0284c7; box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1); }
-        .input-disabled { background-color: #f1f5f9; color: #64748b; border-color: #e2e8f0; cursor: not-allowed; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
-        .btn-action {
-            width: 100%; padding: 16px; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer;
-            transition: all 0.2s ease; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-        }
-        .btn-action-start { background-color: #0284c7; }
-        .btn-action-start:hover { background-color: #0369a1; }
-        .btn-action-end { background-color: #0f172a; }
-        .btn-action-end:hover { background-color: #1e293b; }
-        .btn-action:disabled { background-color: #94a3b8; cursor: not-allowed; opacity: 0.6; }
-        .btn-action:active { transform: translateY(1px); }
-        .btn-back { background-color: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 8px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
-        .btn-back:hover { background-color: #e2e8f0; color: #1e293b; }
-        .camera-container { border-bottom: 1px dashed #e2e8f0; padding-bottom: 16px; margin-bottom: 20px; text-align: center; }
-        .btn-camera {
-            background-color: #ffffff; color: #475569; border: 1px solid #cbd5e1; padding: 10px 16px; border-radius: 8px;
-            font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
-        }
-        .btn-camera:hover { background-color: #f8fafc; border-color: #94a3b8; }
-        .camera-stream-box { margin-top: 12px; border-radius: 12px; overflow: hidden; border: 2px solid #cbd5e1; background-color: #000000; }
-        #loader {
-            position: fixed; inset: 0; background-color: rgba(255, 255, 255, 0.9);
-            z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
-        }
-        .hidden { display: none !important; }
-        .spinner { width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top-color: #0284c7; border-radius: 50%; animation: spin 0.8s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        .modal-header { background-color: #0f172a; padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #38bdf8; }
+        .modal-close { background: none; border: none; color: #94a3b8; font-size: 28px; cursor: pointer; }
+        .modal-close:hover { color: #f87171; }
+        .modal-body { padding: 24px; }
+        .detail-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-top: 16px; }
+        .detail-step-card { background-color: #0f172a; padding: 14px; border-radius: 8px; border: 1px solid #334155; text-align: center; }
+        .detail-step-card.done { border-color: #22c55e; background-color: rgba(22, 163, 74, 0.05); color: #4ade80; }
+        .detail-step-card.wip { border-color: #38bdf8; background-color: rgba(2, 132, 199, 0.1); color: #38bdf8; font-weight: bold; animation: cardPulse 2s infinite; }
+        .detail-step-card.pending { opacity: 0.3; color: #64748b; }
+        @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+        @keyframes cardPulse { 0%, 100% { border-color: #38bdf8; } 50% { border-color: #0284c7; } }
+        @keyframes slideUp { from { transform: translateY(12px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
 </head>
 <body>
 
-    <div id="loader" class="hidden">
-        <div class="spinner"></div>
-        <div id="loader_text" style="color: #0f172a; font-size: 13px; font-weight: 600; font-family: monospace;">EXECUTING TRANSACTION...</div>
+    <div class="monitor-container">
+        <div class="monitor-header">
+            <div>
+                <div class="monitor-title">📊 SMART MULTI-PART MONITOR BOARD</div>
+                <div style="font-size: 12px; color: #94a3b8; margin-top: 4px;">ระบบมอนิเตอร์อัจฉริยะ (ย่อหน้าต่างอัตโนมัติ / คลิกที่แถวเพื่อกางดูไทม์ไลน์ 10 สถานีดิบ)</div>
+            </div>
+            <button onclick="fetchLiveStoreData()" class="btn-refresh">🔄 REFRESH BOARD</button>
+        </div>
+
+        <div class="kpi-dashboard">
+            <div class="kpi-card"><div class="kpi-title">📦 Total Active Orders</div><div class="kpi-value" id="kpi_total">0</div></div>
+            <div class="kpi-card"><div class="kpi-title">⚡ Running Jobs (WIP)</div><div class="kpi-value" id="kpi_wip" style="color:#38bdf8;">0</div></div>
+            <div class="kpi-card"><div class="kpi-title">🟢 Total Good (FG)</div><div class="kpi-value" id="kpi_fg" style="color:#4ade80;">0</div></div>
+            <div class="kpi-card"><div class="kpi-title">🔴 Total Defects (NG)</div><div class="kpi-value" id="kpi_ng" style="color:#f87171;">0</div></div>
+        </div>
+
+        <div class="search-box">
+            <span style="font-size:14px; font-weight:bold; color:#94a3b8;">🔍 ตัวกรองค้นหา:</span>
+            <input type="text" id="searchInput" class="search-input" onkeyup="filterTable()" placeholder="ค้นหาเลขที่ออเดอร์, ชื่อพาร์ท...">
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 10%;">วันที่ลงคิว</th>
+                        <th style="width: 15%;">ใบงานผลิต (Order)</th>
+                        <th style="width: 25%;">ข้อมูลสินค้า / เครื่องจักร</th>
+                        <th style="width: 35%;">สเตตัสกระบวนการผลิต (หลัก)</th>
+                        <th style="width: 15%;">ความคืบหน้า (QA)</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr><td colspan="5" style="text-align:center; padding:40px; color:#94a3b8;">กำลังสตรีมข้อมูลเรียลไทม์จากระบบ ERP Cloud...</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <div class="container">
-        <div class="header">
-            <div>
-                <div class="header-title">📋 PRODUCTION TRACKING SYSTEM</div>
-                <div class="header-subtitle">ENTERPRISE MANAGEMENT TERMINAL</div>
-            </div>
-            <span class="station-badge">NISSEI</span>
-        </div>
-
-        <div id="welcomePage" class="page active">
-            <div style="margin-bottom: 24px; text-align: center;">
-                <h3 style="font-size: 16px; font-weight: 700; color: #0f172a;">ระบบบันทึกเวลาและสถานะการผลิต</h3>
-                <p style="font-size: 12px; color: #64748b; margin-top: 2px;">Select operation sequence to update ERP log</p>
-            </div>
-            <button onclick="navigateTo('startPage')" class="btn-menu btn-menu-start">
+    <div id="detailModal" class="modal-overlay" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
                 <div>
-                    <span>▶️ RECORD START WORK</span>
-                    <span class="desc">บันทึกเวลา "เริ่มปฏิบัติงาน" ของขั้นตอนผลิต</span>
+                    <h2 id="modalOrderNo" style="color:white; font-size:18px; font-weight:800;">ORDER DETAILS</h2>
+                    <p id="modalPartName" style="color:#94a3b8; font-size:13px; margin-top:2px;"></p>
                 </div>
-                <span style="font-size: 16px; color: #0284c7;">❯</span>
-            </button>
-            <button onclick="navigateTo('endPage')" class="btn-menu btn-menu-end">
-                <div>
-                    <span>🛑 RECORD END WORK</span>
-                    <span class="desc">บันทึก "จบงาน" พร้อมสรุปยอดชิ้นงานดี/เสีย</span>
-                </div>
-                <span style="font-size: 16px; color: #0f172a;">❯</span>
-            </button>
-        </div>
-
-        <div id="startPage" class="page">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <span style="font-size: 11px; color: #0284c7; font-weight: 700; font-family: monospace; text-transform: uppercase;">Sequence // Start_Operation</span>
-                <button onclick="clearAndBack()" class="btn-back">⬅️ BACK</button>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
             </div>
-            <div class="camera-container">
-                <button onclick="toggleCameraArea('start')" class="btn-camera">📷 Open Scanner Camera (สแกนผ่านกล้อง)</button>
-                <div id="start_camera_box" class="hidden camera-stream-box"><div id="start_reader" style="width:100%;"></div></div>
-            </div>
-            <div class="input-box-wrapper">
-                <label class="section-title">📥 Barcode Gateway Input</label>
-                <div style="display: flex; gap: 8px;">
-                    <input type="text" id="start_barcode_input" onchange="triggerInputEvent(this.value, 'start')" placeholder="ยิงสแกนบาร์โค้ด หรือ วางรหัสใบงานที่นี่..." autofocus>
-                    <button onclick="manualTrigger('start')" style="background-color: #0f172a; color: #ffffff; border: none; padding: 0 16px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer;">FETCH</button>
-                </div>
-            </div>
-            <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 16px; border-radius: 12px; margin-bottom: 20px;">
-                <div class="section-title" style="color: #0284c7;">🔍 Job Verification Data (ข้อมูลใบงาน)</div>
-                <div class="grid-2">
-                    <div><span style="color:#64748b; font-size:10px; font-weight:700; display:block; margin-bottom:4px;">PART NAME</span><input type="text" id="s_part_name" class="input-disabled" readonly></div>
-                    <div><span style="color:#64748b; font-size:10px; font-weight:700; display:block; margin-bottom:4px;">PART NO.</span><input type="text" id="s_part_no" class="input-disabled" readonly></div>
-                </div>
-                <div class="grid-2" style="grid-template-columns: 2fr 1fr;">
-                    <div><span style="color:#0f172a; font-size:10px; font-weight:700; display:block; margin-bottom:4px;">ORDER NO.</span><input type="text" id="s_order_no" class="input-disabled" style="font-weight:700; color:#0284c7;" readonly></div>
-                    <div><span style="color:#64748b; font-size:10px; font-weight:700; display:block; margin-bottom:4px;">MACHINE NO.</span><input type="text" id="s_mac_no" class="input-disabled" readonly></div>
-                </div>
-                <div style="margin-top: 4px;">
-                    <span style="color:#64748b; font-size:10px; font-weight:700; display:block; margin-bottom:4px;">📦 TOTAL PRODUCTION QTY (จำนวนงาน)</span>
-                    <input type="text" id="s_qty" class="input-disabled" readonly>
-                </div>
-                <input type="hidden" id="s_date">
-            </div>
-            <div style="margin-bottom: 16px;">
-                <label class="section-title">⚙️ Select Target Production Line Process</label>
-                <select id="start_process_select" style="margin-bottom: 16px;">
-                    <option value="">-- เลือกขั้นตอนเริ่มงาน (Select Process) --</option>
-                    <option value="mac_starttime" id="s_opt_mac_starttime">🏭 เริ่มเดินเครื่องจักร (G)</option>
-                    <option value="punch1_starttime" id="s_opt_punch1_starttime">💮 เริ่ม Punch 1 (I)</option>
-                    <option value="punch2_starttime" id="s_opt_punch2_starttime">💮 เริ่ม Punch 2 (K)</option>
-                    <option value="punch3_starttime" id="s_opt_punch3_starttime">💮 เริ่ม Punch 3 (M)</option>
-                    <option value="punch4_starttime" id="s_opt_punch4_starttime">💮 เริ่ม Punch 4 (O)</option>
-                    <option value="cut1_starttime" id="s_opt_cut1_starttime">✂️ เริ่ม Cut 1 (Q)</option>
-                    <option value="cut2_starttime" id="s_opt_cut2_starttime">✂️ เริ่ม Cut 2 (S)</option>
-                    <option value="cut3_starttime" id="s_opt_cut3_starttime">✂️ เริ่ม Cut 3 (U)</option>
-                    <option value="cut4_starttime" id="s_opt_cut4_starttime">✂️ เริ่ม Cut 4 (W)</option>
-                    <option value="hotstamp_starttime" id="s_opt_hotstamp_starttime">🔥 เริ่ม Hotstamp (Y)</option>
-                </select>
-                <button onclick="submitStartData()" id="btn_submit_start" class="btn-action btn-action-start">🛫 TRANSMIT START DATA</button>
-            </div>
-        </div>
-
-        <div id="endPage" class="page">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <span style="font-size: 11px; color: #1e293b; font-weight: 700; font-family: monospace; text-transform: uppercase;">Sequence // Close_Operation</span>
-                <button onclick="clearAndBack()" class="btn-back">⬅️ BACK</button>
-            </div>
-            <div class="camera-container">
-                <button onclick="toggleCameraArea('end')" class="btn-camera">📷 Open Scanner Camera (สแกนผ่านกล้อง)</button>
-                <div id="end_camera_box" class="hidden camera-stream-box"><div id="end_reader" style="width:100%;"></div></div>
-            </div>
-            <div class="input-box-wrapper" style="border-left: 4px solid #0f172a;">
-                <label class="section-title">📥 Barcode Gateway Input</label>
-                <div style="display: flex; gap: 8px;">
-                    <input type="text" id="end_barcode_input" onchange="triggerInputEvent(this.value, 'end')" placeholder="ยิงสแกนบาร์โค้ด หรือ วางรหัสใบงานที่นี่...">
-                    <button onclick="manualTrigger('end')" style="background-color: #0f172a; color: #ffffff; border: none; padding: 0 16px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer;">FETCH</button>
-                </div>
-            </div>
-            
-            <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 16px; border-radius: 12px; margin-bottom: 16px;">
-                <div class="section-title" style="color: #0f172a;">🔍 Bound Target Verification</div>
-                <div class="grid-2">
-                    <div><span style="color:#64748b; font-size:10px; font-weight:700; display:block; margin-bottom:4px;">ORDER NO.</span><input type="text" id="e_order_no" class="input-disabled" readonly></div>
-                    <div><span style="color:#64748b; font-size:10px; font-weight:700; display:block; margin-bottom:4px;">PART NAME</span><input type="text" id="e_part_name" class="input-disabled" readonly></div>
-                </div>
-                <div class="grid-2">
-                    <div><span style="color:#64748b; font-size:10px; font-weight:700; display:block; margin-bottom:4px;">PART NO.</span><input type="text" id="e_part_no" class="input-disabled" readonly></div>
-                    <div><span style="color:#64748b; font-size:10px; font-weight:700; display:block; margin-bottom:4px;">TOTAL QTY</span><input type="text" id="e_total_qty" class="input-disabled" readonly></div>
-                </div>
-            </div>
-
-            <div style="margin-bottom: 16px;">
-                <label class="section-title">⚙️ Select Completed Production Stage</label>
-                <select id="end_process_select" style="margin-bottom: 16px;">
-                    <option value="">-- เลือกขั้นตอนจบงาน (Select Process) --</option>
-                    <option value="mac_endtime" id="e_opt_mac_endtime">🏭 จบเดินเครื่องจักร (H)</option>
-                    <option value="punch1_endtime" id="e_opt_punch1_endtime">💮 จบ Punch 1 (J)</option>
-                    <option value="punch2_endtime" id="e_opt_punch2_endtime">💮 จบ Punch 2 (L)</option>
-                    <option value="punch3_endtime" id="e_opt_punch3_endtime">💮 จบ Punch 3 (N)</option>
-                    <option value="punch4_endtime" id="e_opt_punch4_endtime">💮 จบ Punch 4 (P)</option>
-                    <option value="cut1_endtime" id="e_opt_cut1_endtime">✂️ จบ Cut 1 (R)</option>
-                    <option value="cut2_endtime" id="e_opt_cut2_endtime">✂️ จบ Cut 2 (T)</option>
-                    <option value="cut3_endtime" id="e_opt_cut3_endtime">✂️ จบ Cut 3 (V)</option>
-                    <option value="cut4_endtime" id="e_opt_cut4_endtime">✂️ จบ Cut 4 (X)</option>
-                    <option value="hotstamp_endtime" id="e_opt_hotstamp_endtime">🔥 จบ Hotstamp (Z)</option>
-                </select>
-            </div>
-
-            <div style="background-color: #f1f5f9; border: 1px solid #cbd5e1; padding: 16px; border-radius: 12px; margin-bottom: 20px;">
-                <label class="section-title">📊 Production Output QA Counter</label>
-                <div class="grid-2">
-                    <div><span style="color:#16a34a; font-size:11px; font-weight:700; display:block; margin-bottom:4px;">FG QTY (ชิ้นงานดี)</span><input type="number" id="e_fg" style="text-align:center; font-size:20px; color:#16a34a; font-weight:700;" placeholder="0"></div>
-                    <div><span style="color:#dc2626; font-size:11px; font-weight:700; display:block; margin-bottom:4px;">NG QTY (ชิ้นงานเสีย)</span><input type="number" id="e_ng" style="text-align:center; font-size:20px; color:#dc2626; font-weight:700;" placeholder="0"></div>
-                </div>
-                <button onclick="submitEndData()" id="btn_submit_end" class="btn-action btn-action-end" style="margin-top:10px;">🏁 TRANSMIT COMPLETION DATA</button>
+            <div class="modal-body">
+                <h3 style="color: #38bdf8; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: bold;">ผังลำดับไทม์ไลน์สถานีการผลิตทั้ง 10 ขั้นตอน (สแกนสดจากแท็บโรงงาน)</h3>
+                <div class="detail-grid" id="modalTimelineGrid"></div>
             </div>
         </div>
     </div>
 
     <script>
-        const BACKEND_URL = "https://script.google.com/macros/s/AKfycbyHIxauiSfYH9Kn-pMFnCB80Oj84pzrDBnhRUeSgup8jvKPVNDm6_htPzcJbdTUCNPl/exec"; 
+        // 🌟 แก้ไข: วางลิงก์ URL เว็บแอปของพี่ที่ได้มาจาก Google Apps Script ในช่องด้านล่างนี้ครับ
+        const BACKEND_URL = "https://script.google.com/macros/s/AKfycbzv3itr9eSQsCp70qKhB9Xy6vfPvjZzOV3q4EmxCG4ayE1i3dwyy73LYeFPAXQq5DaL/exec"; 
 
-        let html5QrcodeScanner = null;
-        
-        function navigateTo(pageId) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-            closeCamera();
-        }
+        let globalCachedStore = [];
+        document.addEventListener("DOMContentLoaded", fetchLiveStoreData);
 
-        function toggleCameraArea(mode) {
-            const boxId = mode === 'start' ? 'start_camera_box' : 'end_camera_box';
-            const readerId = mode === 'start' ? 'start_reader' : 'end_reader';
-            const targetBox = document.getElementById(boxId);
+        function fetchLiveStoreData() {
+            document.getElementById("tableBody").innerHTML = `<tr><td colspan="5" style="text-align:center; padding:40px; color:#38bdf8; font-weight:bold; animation:pulse 1s infinite;">🔄 REFRESHING CLOUD STORAGE CORRELATION...</td></tr>`;
             
-            if (targetBox.classList.contains('hidden')) {
-                closeCamera();
-                targetBox.classList.remove('hidden');
-                html5QrcodeScanner = new Html5Qrcode(readerId);
-                
-                html5QrcodeScanner.start(
-                    { facingMode: "environment" },
-                    { fps: 25, qrbox: { width: 260, height: 260 } },
-                    (decodedText) => {
-                        const inputId = mode === 'start' ? 'start_barcode_input' : 'end_barcode_input';
-                        document.getElementById(inputId).value = decodedText;
-                        processRawData(decodedText, mode);
-                        closeCamera();
-                    },
-                    (errorMessage) => {}
-                ).catch(err => {
-                    alert("❌ สิทธิ์กล้องถูกปฏิเสธ หรือ ไม่พบโมดูลกล้อง");
-                    closeCamera();
-                });
-            } else {
-                closeCamera();
-            }
-        }
-
-        function closeCamera() {
-            document.getElementById('start_camera_box').classList.add('hidden');
-            document.getElementById('end_camera_box').classList.add('hidden');
-            if (html5QrcodeScanner) {
-                html5QrcodeScanner.stop().catch(()=>{});
-                html5QrcodeScanner = null;
-            }
-        }
-
-        function triggerInputEvent(value, mode) { processRawData(value, mode); }
-        function manualTrigger(mode) {
-            const inputId = mode === 'start' ? 'start_barcode_input' : 'end_barcode_input';
-            processRawData(document.getElementById(inputId).value, mode);
-        }
-
-        function processRawData(rawText, mode) {
-            if (!rawText || rawText.trim() === "") return;
-            let chunks = rawText.split('|').map(item => item.trim()).filter(item => item !== "");
-            
-            if (chunks.length === 5) {
-                showLoader("CONNECTING ERP CLOUD...");
-                resetDropdownStyles();
-                
-                fetch(BACKEND_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "text/plain" },
-                    body: JSON.stringify({ action: "checkOrderData", payload: { order_no: chunks[2] } })
-                })
-                .then(res => res.json())
-                .then(response => {
-                    hideLoader();
-                    if(response.status === "success") {
-                        var resData = response.data;
-                        if (mode === 'start') {
-                            document.getElementById('s_part_name').value = chunks[0];
-                            document.getElementById('s_part_no').value = chunks[1];
-                            document.getElementById('s_order_no').value = chunks[2];
-                            document.getElementById('s_qty').value = chunks[3];
-                            document.getElementById('s_mac_no').value = chunks[4];
-                            document.getElementById('s_date').value = new Date().toLocaleDateString('th-TH');
-                            
-                            if (resData.exists) {
-                                highlightSavedProcesses(resData.savedProcesses, 'start');
-                            }
-                        } else {
-                            document.getElementById('e_order_no').value = chunks[2];
-                            document.getElementById('e_part_name').value = chunks[0];
-                            document.getElementById('e_part_no').value = chunks[1];
-                            document.getElementById('e_total_qty').value = chunks[3];
-                            
-                            if (resData.exists) {
-                                highlightSavedProcesses(resData.savedProcesses, 'end');
-                            }
-                        }
-                    }
-                })
-                .catch(err => { hideLoader(); alert("❌ การส่งข้อมูลล้มเหลว: " + err); });
-            } else {
-                alert("❌ รูปแบบบาร์โค้ดไม่ถูกต้อง (ต้องคั่นด้วยเครื่องหมาย | ครบ 5 ส่วน)");
-            }
-        }
-
-        function highlightSavedProcesses(savedObj, type) {
-            for (let key in savedObj) {
-                let optElement = document.getElementById((type === 'start' ? 's_opt_' : 'e_opt_') + key);
-                if (optElement) {
-                    optElement.innerText = "🔒 " + optElement.innerText + " [ลงทะเบียนแล้ว]";
-                    optElement.style.color = "#94a3b8";
-                    optElement.style.backgroundColor = "#f1f5f9";
+            fetch(BACKEND_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain" },
+                body: JSON.stringify({ action: "getLiveTrackingData" })
+            })
+            .then(res => res.json())
+            .then(response => {
+                if(response.status === "success") {
+                    globalCachedStore = response.data;
+                    renderTableDashboard(globalCachedStore);
                 }
-            }
+            })
+            .catch(err => {
+                document.getElementById("tableBody").innerHTML = `<tr><td colspan="5" style="text-align:center; padding:40px; color:#f87171; font-weight:bold;">❌ คอนเน็กชั่นผิดพลาด ไม่สามารถดึงฐานข้อมูลได้: ${err}</td></tr>`;
+            });
         }
 
-        function resetDropdownStyles() {
-            const list = [
-                "mac_starttime", "mac_endtime", "punch1_starttime", "punch1_endtime",
-                "punch2_starttime", "punch2_endtime", "punch3_starttime", "punch3_endtime",
-                "punch4_starttime", "punch4_endtime", "cut1_starttime", "cut1_endtime",
-                "cut2_starttime", "cut2_endtime", "cut3_starttime", "cut3_endtime",
-                "cut4_starttime", "cut4_endtime", "hotstamp_starttime", "hotstamp_endtime"
-            ];
-            list.forEach(k => {
-                let sEl = document.getElementById('s_opt_' + k);
-                let eEl = document.getElementById('e_opt_' + k);
-                if(sEl) { sEl.style.color = ""; sEl.style.backgroundColor = ""; }
-                if(eEl) { eEl.style.color = ""; eEl.style.backgroundColor = ""; }
+        function renderTableDashboard(dataArray) {
+            let html = "";
+            let totalActive = dataArray.length;
+            let wipCount = 0; let totalFg = 0; let totalNg = 0;
+            
+            if(totalActive === 0) {
+                document.getElementById("tableBody").innerHTML = `<tr><td colspan="5" style="text-align:center; padding:40px; color:#94a3b8;">📭 ไม่พบประวัติออเดอร์ในตารางข้อมูล</td></tr>`;
+                return;
+            }
+            
+            dataArray.forEach((row, index) => {
+                totalFg += row.fgQty; totalNg += row.ngQty;
+                let isWip = Object.values(row.times).some(t => t === "รันอยู่");
+                if(isWip) wipCount++;
+                
+                let pClass = "part-badge";
+                if(row.category === "Automotive") pClass += " badge-automotive";
+                if(row.category === "Electronics") pClass += " badge-electronics";
+                
+                let percent = 0;
+                if(row.totalQty > 0) percent = Math.min(100, Math.round((row.fgQty / row.totalQty) * 100));
+                
+                html += `
+                    <tr class="clickable-row" onclick="openExtendedModal(${index})">
+                        <td>${row.date}</td>
+                        <td style="font-family:monospace; font-weight:bold; color:#38bdf8; font-size:15px;">
+                            ${row.orderNo}
+                            <span class="click-hint">📄 CLICK DETAIL</span>
+                        </td>
+                        <td>
+                            <div style="font-weight:bold; color:white;">${row.partName}</div>
+                            <div style="font-size:11px; color:#94a3b8; margin-top:2px;">PN: ${row.partNo} | MC: ${row.macNo || '-'}</div>
+                            <span class="${pClass}">${row.category}</span>
+                        </td>
+                        <td>
+                            <div class="timeline-flow">
+                                ${buildMiniStepBox("🏭 MAC", row.times.mac)}
+                                <span class="arrow-next">➔</span>
+                                ${buildMiniStepBox("💮 P1", row.times.p1)}
+                                <span class="arrow-next">➔</span>
+                                ${buildMiniStepBox("💮 P2", row.times.p2)}
+                                <span class="arrow-next">➔</span>
+                                ${buildMiniStepBox("✂️ CUT1", row.times.cut1)}
+                                <span class="arrow-next">➔</span>
+                                ${buildMiniStepBox("🔥 STAMP", row.times.stamp)}
+                            </div>
+                        </td>
+                        <td>
+                            <div style="font-weight:bold; margin-bottom:4px; font-size:13px; color:#10b981;">FG: ${row.fgQty} / ${row.totalQty}</div>
+                            <div class="progress-container"><div class="progress-bar" style="width: ${percent}%;"></div></div>
+                            <div style="font-size:11px; color:#f87171; margin-top:4px; font-weight:600;">Defect NG: ${row.ngQty} ชิ้น</div>
+                        </td>
+                    </tr>
+                `;
             });
             
-            // ... (keep original reset strings as they were)
-            document.getElementById('s_opt_mac_starttime').innerText = "🏭 เริ่มเดินเครื่องจักร (G)";
-            document.getElementById('s_opt_punch1_starttime').innerText = "💮 เริ่ม Punch 1 (I)";
-            document.getElementById('s_opt_punch2_starttime').innerText = "💮 เริ่ม Punch 2 (K)";
-            document.getElementById('s_opt_punch3_starttime').innerText = "💮 เริ่ม Punch 3 (M)";
-            document.getElementById('s_opt_punch4_starttime').innerText = "💮 เริ่ม Punch 4 (O)";
-            document.getElementById('s_opt_cut1_starttime').innerText = "✂️ เริ่ม Cut 1 (Q)";
-            document.getElementById('s_opt_cut2_starttime').innerText = "✂️ เริ่ม Cut 2 (S)";
-            document.getElementById('s_opt_cut3_starttime').innerText = "✂️ เริ่ม Cut 3 (U)";
-            document.getElementById('s_opt_cut4_starttime').innerText = "✂️ เริ่ม Cut 4 (W)";
-            document.getElementById('s_opt_hotstamp_starttime').innerText = "🔥 เริ่ม Hotstamp (Y)";
-            
-            document.getElementById('e_opt_mac_endtime').innerText = "🏭 จบเดินเครื่องจักร (H)";
-            document.getElementById('e_opt_punch1_endtime').innerText = "💮 จบ Punch 1 (J)";
-            document.getElementById('e_opt_punch2_endtime').innerText = "💮 จบ Punch 2 (L)";
-            document.getElementById('e_opt_punch3_endtime').innerText = "💮 จบ Punch 3 (N)";
-            document.getElementById('e_opt_punch4_endtime').innerText = "💮 จบ Punch 4 (P)";
-            document.getElementById('e_opt_cut1_endtime').innerText = "✂️ จบ Cut 1 (R)";
-            document.getElementById('e_opt_cut2_endtime').innerText = "✂️ จบ Cut 2 (T)";
-            document.getElementById('e_opt_cut3_endtime').innerText = "✂️ จบ Cut 3 (V)";
-            document.getElementById('e_opt_cut4_endtime').innerText = "✂️ จบ Cut 4 (X)";
-            document.getElementById('e_opt_hotstamp_endtime').innerText = "🔥 จบ Hotstamp (Z)";
+            document.getElementById("tableBody").innerHTML = html;
+            document.getElementById("kpi_total").innerText = totalActive;
+            document.getElementById("kpi_wip").innerText = wipCount;
+            document.getElementById("kpi_fg").innerText = totalFg;
+            document.getElementById("kpi_ng").innerText = totalNg;
         }
 
-        function setLockSubmitState(isLock) {
-            document.getElementById('btn_submit_start').disabled = isLock;
-            document.getElementById('btn_submit_end').disabled = isLock;
-        }
+        function buildMiniStepBox(label, proc) {
+    // proc ตอนนี้เป็น Object {status: "...", ts: 12345}
+    let cls = "step pending";
+    if (proc.status === "จบงาน") cls = "step done";
+    if (proc.status === "รันอยู่") cls = "step wip";
+    return `<div class="${cls}">${label}</div>`;
+}
 
-        function submitStartData() {
-            var proc = document.getElementById('start_process_select').value;
-            if(!proc) { alert("⚠️ กรุณาเลือกขั้นตอนปฏิบัติงานก่อนทำการส่งข้อมูล!"); return; }
-            if(!document.getElementById('s_order_no').value) { alert("⚠️ ยังไม่ได้ดึงข้อมูลบาร์โค้ดใบงาน!"); return; }
-            
-            setLockSubmitState(true);
-            showLoader("RECORDING START DATA...");
-            
-            var payload = {
-                part_name: document.getElementById('s_part_name').value, part_no: document.getElementById('s_part_no').value,
-                order_no: document.getElementById('s_order_no').value, qty: document.getElementById('s_qty').value,
-                mac_no: document.getElementById('s_mac_no').value, date: document.getElementById('s_date').value,
-                process_column: proc, time_value: new Date().toLocaleTimeString('th-TH', { hour12: false }).substring(0, 5)
-            };
+        function openExtendedModal(index) {
+    let item = globalCachedStore[index];
+    document.getElementById('modalOrderNo').innerText = "📄 FACTORY ROUTING TRACK - ORDER #" + item.orderNo;
+    document.getElementById('modalPartName').innerText = `พาร์ท: ${item.partName} | เป้าหมาย: ${item.totalQty} ชิ้น`;
+    
+    // 1. เพิ่มตัวแปลชื่อขั้นตอน (Mapping)
+    const stepNames = {
+        'mac': '🏭 Machine Run', 'p1': '💮 Punch 1', 'p2': '💮 Punch 2', 
+        'p3': '💮 Punch 3', 'p4': '💮 Punch 4', 'cut1': '✂️ Cut 1', 
+        'cut2': '✂️ Cut 2', 'cut3': '✂️ Cut 3', 'cut4': '✂️ Cut 4', 'stamp': '🔥 Hotstamping'
+    };
 
-            fetch(BACKEND_URL, {
-                method: "POST",
-                headers: { "Content-Type": "text/plain" },
-                body: JSON.stringify({ action: "recordStartData", payload: payload })
-            })
-            .then(res => res.json())
-            .then(res => {
-                hideLoader();
-                alert("✅ [START LOGGED] บันทึกเวลาเริ่มงานเข้าสู่คลาวด์เรียบร้อย!");
-                clearAndBack();
-            })
-            .catch(err => { hideLoader(); setLockSubmitState(false); alert("❌ TRANSMISSION ERROR: " + err); });
-        }
+    // 2. แปลงข้อมูลและจัดเรียง
+    let timeline = Object.keys(item.times).map(key => {
+        let val = item.times[key];
+        return {
+            id: key,
+            name: stepNames[key] || key.toUpperCase(), // ใช้ชื่อที่ map ไว้ หรือใช้ชื่อเดิม
+            status: typeof val === 'object' ? val.status : val,
+            timestamp: (typeof val === 'object' && val.timestamp) ? new Date(val.timestamp) : new Date(0)
+        };
+    });
 
-        function submitEndData() {
-            var proc = document.getElementById('end_process_select').value;
-            if(!proc) { alert("⚠️ กรุณาเลือกขั้นตอนปิดงานก่อนทำการส่งข้อมูล!"); return; }
-            if(!document.getElementById('e_order_no').value) { alert("⚠️ ยังไม่ได้ดึงข้อมูลบาร์โค้ดใบงาน!"); return; }
-            
-            setLockSubmitState(true);
-            showLoader("RECORDING COMPLETION DATA...");
-            
-            var payload = {
-                order_no: document.getElementById('e_order_no').value, process_column: proc,
-                fg_qty: document.getElementById('e_fg').value, ng_qty: document.getElementById('e_ng').value,
-                time_value: new Date().toLocaleTimeString('th-TH', { hour12: false }).substring(0, 5)
-            };
+    // เรียงลำดับตามเวลา (ถ้า timestamp เป็น 0 คือยังไม่ทำ จะถูกดันไปท้ายสุด)
+    timeline.sort((a, b) => {
+        if (a.timestamp.getTime() === 0 && b.timestamp.getTime() === 0) return 0;
+        if (a.timestamp.getTime() === 0) return 1;
+        if (b.timestamp.getTime() === 0) return -1;
+        return a.timestamp - b.timestamp;
+    });
 
-            fetch(BACKEND_URL, {
-                method: "POST",
-                headers: { "Content-Type": "text/plain" },
-                body: JSON.stringify({ action: "recordEndData", payload: payload })
-            })
-            .then(res => res.json())
-            .then(res => {
-                hideLoader();
-                alert("✅ [END LOGGED] บันทึกสรุปจบงานเรียบร้อย!");
-                clearAndBack();
-            })
-            .catch(err => { hideLoader(); setLockSubmitState(false); alert("❌ DATABASE TRANSMISSION ERROR: " + err); });
-        }
-
-        function showLoader(text) { document.getElementById('loader_text').innerText = text; document.getElementById('loader').classList.remove('hidden'); }
-        function hideLoader() { document.getElementById('loader').classList.add('hidden'); }
+    // 3. แสดงผลใน Modal
+    let gridHtml = timeline.map(step => {
+        let cls = "detail-step-card pending";
+        let statusText = "📭 ยังไม่เริ่ม";
         
-        function clearAndBack() {
-            closeCamera();
-            document.getElementById('start_barcode_input').value = ''; document.getElementById('end_barcode_input').value = '';
-            document.getElementById('s_part_name').value = ''; document.getElementById('s_part_no').value = '';
-            document.getElementById('s_order_no').value = ''; document.getElementById('s_mac_no').value = '';
-            document.getElementById('s_qty').value = '';
-            document.getElementById('e_fg').value = ''; document.getElementById('e_ng').value = '';
-            document.getElementById('e_order_no').value = ''; document.getElementById('e_part_name').value = '';
-            document.getElementById('e_part_no').value = '';
-            document.getElementById('e_total_qty').value = '';
-            document.getElementById('start_process_select').value = ''; document.getElementById('end_process_select').value = '';
-            setLockSubmitState(false); resetDropdownStyles();
-            navigateTo('welcomePage');
+        if(step.status === "จบงาน") { cls = "detail-step-card done"; statusText = "🟢 COMPLETED"; }
+        else if(step.status === "รันอยู่") { cls = "detail-step-card wip"; statusText = "⚡ PROCESSING"; }
+
+        // เปลี่ยนจากเดิมเป็นโค้ดนี้:
+let timeStr = "-";
+if (step.timestamp && step.timestamp.getTime() > 0) {
+    // ดึงเวลาจาก timestamp ที่ได้มา
+    let h = step.timestamp.getHours().toString().padStart(2, '0');
+    let m = step.timestamp.getMinutes().toString().padStart(2, '0');
+    
+    // แสดงผล "วันที่ปัจจุบัน + เวลา" (เพื่อให้เห็นชัดว่างานเสร็จวันนี้กี่โมง)
+    timeStr = "25/05/2026 " + h + ":" + m;
+}
+
+        return `
+            <div class="${cls}">
+                <div style="font-weight: bold; font-size: 13px; margin-bottom: 4px;">${step.name}</div>
+                <div style="font-size: 11px; margin-bottom: 4px;">${statusText}</div>
+                <div style="font-size: 10px; color: #94a3b8;">⏰ ${timeStr}</div>
+            </div>
+        `;
+    }).join('');
+
+    document.getElementById('modalTimelineGrid').innerHTML = gridHtml;
+    document.getElementById('detailModal').style.display = 'flex';
+}
+        function closeModal() { document.getElementById('detailModal').style.display = 'none'; }
+        
+        function filterTable() {
+            let input = document.getElementById("searchInput").value.toUpperCase();
+            let rows = document.getElementById("tableBody").getElementsByTagName("tr");
+            for (let i = 0; i < rows.length; i++) {
+                if(!rows[i].classList.contains('clickable-row')) continue;
+                let text = rows[i].textContent || rows[i].innerText;
+                rows[i].style.display = text.toUpperCase().includes(input) ? "" : "none";
+            }
         }
     </script>
 </body>
