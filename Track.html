@@ -130,7 +130,7 @@
 
     <script>
         // 🌟 แก้ไข: วางลิงก์ URL เว็บแอปของพี่ที่ได้มาจาก Google Apps Script ในช่องด้านล่างนี้ครับ
-        const BACKEND_URL = "https://script.google.com/macros/s/AKfycbylLzppA93GezUYVHQ4E6414a_Nwic0V80C0-mgo6vbjVvNcFGqbMCQ7E87A-tEVVLU/exec"; 
+        const BACKEND_URL = "https://script.google.com/macros/s/AKfycbwiCEuolBXafbj77B9ivS9wzbSWXxQGv6lmp49u817AALLDNQ9FyqWsCgxUeWe2oA8/exec"; 
 
         let globalCachedStore = [];
         document.addEventListener("DOMContentLoaded", fetchLiveStoreData);
@@ -226,38 +226,47 @@
         }
 
         function openExtendedModal(index) {
-            let item = globalCachedStore[index];
-            document.getElementById('modalOrderNo').innerText = "📄 FACTORY ROUTING TRACK - ORDER #" + item.orderNo;
-            document.getElementById('modalPartName').innerText = `พาร์ทสินค้า: ${item.partName} (${item.partNo}) | รหัสเป้าหมายยอดผลิต: ${item.totalQty} ชิ้น`;
-            
-            let pipeline = [
-                { id: 'mac', name: '🏭 1. Machine Run' }, { id: 'p1', name: '💮 2. Punching 1' },
-                { id: 'p2', name: '💮 3. Punching 2' }, { id: 'p3', name: '💮 4. Punching 3' },
-                { id: 'p4', name: '💮 5. Punching 4' }, { id: 'cut1', name: '✂️ 6. Cutting Line 1' },
-                { id: 'cut2', name: '✂️ 7. Cutting Line 2' }, { id: 'cut3', name: '✂️ 8. Cutting Line 3' },
-                { id: 'cut4', name: '✂️ 9. Cutting Line 4' }, { id: 'stamp', name: '🔥 10. Hotstamping' }
-            ];
-            
-            let gridHtml = "";
-            pipeline.forEach(step => {
-                let currentStatus = item.times[step.id] || "รอคิว";
-                let cls = "detail-step-card pending";
-                let statusText = "📭 ลำดับคิวว่าง";
-                
-                if(currentStatus === "จบงาน") { cls = "detail-step-card done"; statusText = "🟢 COMPLETED (จบงาน)"; }
-                else if(currentStatus === "รันอยู่") { cls = "detail-step-card wip"; statusText = "⚡ PROCESSING (กำลังทำ)"; }
-                
-                gridHtml += `
-                    <div class="${cls}">
-                        <div style="font-weight: bold; font-size: 14px; margin-bottom: 4px;">${step.name}</div>
-                        <div style="font-size: 11px; margin-bottom: 6px;">${statusText}</div>
-                    </div>
-                `;
-            });
-            document.getElementById('modalTimelineGrid').innerHTML = gridHtml;
-            document.getElementById('detailModal').style.display = 'flex';
-        }
+    let item = globalCachedStore[index];
+    document.getElementById('modalOrderNo').innerText = "📄 FACTORY ROUTING TRACK - ORDER #" + item.orderNo;
+    document.getElementById('modalPartName').innerText = `พาร์ท: ${item.partName} | เป้าหมาย: ${item.totalQty} ชิ้น`;
+    
+    // 1. แปลง Object 'times' ให้เป็น Array เพื่อจัดการเรียงลำดับ
+    let timeline = Object.keys(item.times).map(key => {
+        let val = item.times[key];
+        // ตรวจสอบข้อมูล: ถ้าข้อมูลเป็น Object ให้ใช้ timestamp ถ้าเป็น string ให้ถือว่ายังไม่มีเวลา
+        return {
+            id: key,
+            status: typeof val === 'object' ? val.status : val,
+            timestamp: typeof val === 'object' ? new Date(val.timestamp) : new Date(0)
+        };
+    });
 
+    // 2. เรียงลำดับ (Sort) ตามเวลา: ตัวไหนเวลาเก่า/บันทึกก่อน ให้ขึ้นก่อน
+    timeline.sort((a, b) => a.timestamp - b.timestamp);
+
+    // 3. แสดงผลใน Modal
+    let gridHtml = timeline.map(step => {
+        let cls = "detail-step-card pending";
+        let statusText = "📭 ลำดับคิวว่าง";
+        
+        if(step.status === "จบงาน") { cls = "detail-step-card done"; statusText = "🟢 COMPLETED"; }
+        else if(step.status === "รันอยู่") { cls = "detail-step-card wip"; statusText = "⚡ PROCESSING"; }
+
+        // ดึงเวลามาโชว์ถ้ามี
+        let timeStr = step.timestamp.getTime() > 0 ? step.timestamp.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : "-";
+
+        return `
+            <div class="${cls}">
+                <div style="font-weight: bold; font-size: 14px; margin-bottom: 4px;">${step.id.toUpperCase()}</div>
+                <div style="font-size: 11px; margin-bottom: 6px;">${statusText}</div>
+                <div style="font-size: 10px; color: #38bdf8;">⏰ ${timeStr}</div>
+            </div>
+        `;
+    }).join('');
+
+    document.getElementById('modalTimelineGrid').innerHTML = gridHtml;
+    document.getElementById('detailModal').style.display = 'flex';
+}
         function closeModal() { document.getElementById('detailModal').style.display = 'none'; }
         
         function filterTable() {
