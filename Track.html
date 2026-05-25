@@ -265,7 +265,9 @@
         if(step.status === "จบงาน") { cls = "detail-step-card done"; statusText = "🟢 COMPLETED"; }
         else if(step.status === "รันอยู่") { cls = "detail-step-card wip"; statusText = "⚡ PROCESSING"; }
 
-        let timeStr = step.timestamp.getTime() > 0 ? step.timestamp.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : "-";
+        let timeStr = (step.timestamp && step.timestamp.getTime() > 0) 
+    ? step.timestamp.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) 
+    : "-";
 
         return `
             <div class="${cls}">
