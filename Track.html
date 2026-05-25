@@ -130,7 +130,7 @@
 
     <script>
         // 🌟 แก้ไข: วางลิงก์ URL เว็บแอปของพี่ที่ได้มาจาก Google Apps Script ในช่องด้านล่างนี้ครับ
-        const BACKEND_URL = "https://script.google.com/macros/s/AKfycbyHIxauiSfYH9Kn-pMFnCB80Oj84pzrDBnhRUeSgup8jvKPVNDm6_htPzcJbdTUCNPl/exec"; 
+        const BACKEND_URL = "https://script.google.com/macros/s/AKfycbzv3itr9eSQsCp70qKhB9Xy6vfPvjZzOV3q4EmxCG4ayE1i3dwyy73LYeFPAXQq5DaL/exec"; 
 
         let globalCachedStore = [];
         document.addEventListener("DOMContentLoaded", fetchLiveStoreData);
@@ -265,9 +265,16 @@
         if(step.status === "จบงาน") { cls = "detail-step-card done"; statusText = "🟢 COMPLETED"; }
         else if(step.status === "รันอยู่") { cls = "detail-step-card wip"; statusText = "⚡ PROCESSING"; }
 
-        let timeStr = (step.timestamp && step.timestamp.getTime() > 0) 
-    ? step.timestamp.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) 
-    : "-";
+        // เปลี่ยนจากเดิมเป็นโค้ดนี้:
+let timeStr = "-";
+if (step.timestamp && step.timestamp.getTime() > 0) {
+    // ดึงเวลาจาก timestamp ที่ได้มา
+    let h = step.timestamp.getHours().toString().padStart(2, '0');
+    let m = step.timestamp.getMinutes().toString().padStart(2, '0');
+    
+    // แสดงผล "วันที่ปัจจุบัน + เวลา" (เพื่อให้เห็นชัดว่างานเสร็จวันนี้กี่โมง)
+    timeStr = "25/05/2026 " + h + ":" + m;
+}
 
         return `
             <div class="${cls}">
