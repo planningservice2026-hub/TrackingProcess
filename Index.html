@@ -393,6 +393,10 @@
             
             setLockSubmitState(true);
             showLoader("RECORDING START DATA...");
+
+                // สร้างตัวแปร Timestamp รวมที่นี่
+            const now = new Date();
+            const timestamp = now.toLocaleDateString('th-TH') + " " + now.toLocaleTimeString('th-TH', { hour12: false });
             
             var payload = {
                 part_name: document.getElementById('s_part_name').value.toUpperCase(),
@@ -425,6 +429,10 @@
             
             setLockSubmitState(true);
             showLoader("RECORDING COMPLETION DATA...");
+
+            // สร้างตัวแปร Timestamp รวมที่นี่
+            const now = new Date();
+            const timestamp = now.toLocaleDateString('th-TH') + " " + now.toLocaleTimeString('th-TH', { hour12: false });
             
             var payload = {
                 order_no: document.getElementById('e_order_no').value.toUpperCase(),
