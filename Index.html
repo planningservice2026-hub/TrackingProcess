@@ -450,16 +450,14 @@
             setLockSubmitState(true);
             showLoader("RECORDING COMPLETION DATA...");
 
-            // สร้างตัวแปร Timestamp รวมที่นี่
             const now = new Date();
             const timestamp = now.toLocaleDateString('th-TH') + " " + now.toLocaleTimeString('th-TH', { hour12: false });
-            
             var payload = {
                 order_no: document.getElementById('e_order_no').value.toUpperCase(),
                 process_column: proc,
                 fg_qty: document.getElementById('e_fg').value,
                 ng_qty: document.getElementById('e_ng').value,
-                timestamp: timestamp // ส่งค่านี้แทน time_value เดิม
+                timestamp: timestamp
             };
 
             fetch(BACKEND_URL, {
@@ -473,7 +471,11 @@
                 alert("✅ [END LOGGED] บันทึกสรุปจบงานเรียบร้อย!");
                 clearAndBack();
             })
-            .catch(err => { hideLoader(); setLockSubmitState(false); alert("❌ DATABASE TRANSMISSION ERROR: " + err); });
+            .catch(err => { 
+                hideLoader(); 
+                setLockSubmitState(false); 
+                alert("❌ DATABASE TRANSMISSION ERROR: " + err); 
+            });
         }
 
         function showLoader(text) { document.getElementById('loader_text').innerText = text; document.getElementById('loader').classList.remove('hidden'); }
