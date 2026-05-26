@@ -46,12 +46,13 @@
             display: flex; align-items: center; gap: 6px;
         }
         .input-box-wrapper { background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 16px; border-radius: 12px; margin-bottom: 20px; }
-        input[type=text], input[type=number], select {
+       input[type=text], input[type=number], select {
             width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #cbd5e1; background-color: #ffffff; color: #0f172a;
             font-size: 16px; font-weight: 600; outline: none; transition: all 0.15s ease;
+            text-transform: uppercase; /* เพิ่มบรรทัดนี้: บังคับแสดงผลตัวใหญ่ */
         }
         input[type=text]:focus, input[type=number]:focus, select:focus { border-color: #0284c7; box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1); }
-        .input-disabled { background-color: #f1f5f9; color: #64748b; border-color: #e2e8f0; cursor: not-allowed; }
+        .input-disabled { background-color: #f1f5f9; color: #64748b; border-color: #e2e8f0; cursor: not-allowed; text-transform: uppercase; } /* เพิ่ม text-transform */
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
         .btn-action {
             width: 100%; padding: 16px; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer;
@@ -283,6 +284,7 @@
         }
 
         function processRawData(rawText, mode) {
+            rawText = rawText.toUpperCase();
             if (!rawText || rawText.trim() === "") return;
             let chunks = rawText.split('|').map(item => item.trim()).filter(item => item !== "");
             
@@ -393,12 +395,15 @@
             showLoader("RECORDING START DATA...");
             
             var payload = {
-                part_name: document.getElementById('s_part_name').value, part_no: document.getElementById('s_part_no').value,
-                order_no: document.getElementById('s_order_no').value, qty: document.getElementById('s_qty').value,
-                mac_no: document.getElementById('s_mac_no').value, date: document.getElementById('s_date').value,
-                process_column: proc, time_value: new Date().toLocaleTimeString('th-TH', { hour12: false }).substring(0, 5)
+                part_name: document.getElementById('s_part_name').value.toUpperCase(),
+                part_no: document.getElementById('s_part_no').value.toUpperCase(),
+                order_no: document.getElementById('s_order_no').value.toUpperCase(),
+                qty: document.getElementById('s_qty').value,
+                mac_no: document.getElementById('s_mac_no').value.toUpperCase(),
+                date: document.getElementById('s_date').value,
+                process_column: proc, 
+                time_value: new Date().toLocaleTimeString('th-TH', { hour12: false }).substring(0, 5)
             };
-
             fetch(BACKEND_URL, {
                 method: "POST",
                 headers: { "Content-Type": "text/plain" },
@@ -422,8 +427,10 @@
             showLoader("RECORDING COMPLETION DATA...");
             
             var payload = {
-                order_no: document.getElementById('e_order_no').value, process_column: proc,
-                fg_qty: document.getElementById('e_fg').value, ng_qty: document.getElementById('e_ng').value,
+                order_no: document.getElementById('e_order_no').value.toUpperCase(),
+                process_column: proc,
+                fg_qty: document.getElementById('e_fg').value,
+                ng_qty: document.getElementById('e_ng').value,
                 time_value: new Date().toLocaleTimeString('th-TH', { hour12: false }).substring(0, 5)
             };
 
