@@ -314,37 +314,32 @@
                                 highlightSavedProcesses(resData.savedProcesses, 'start');
                             }
                         } else {
-                      document.getElementById('e_order_no').value = chunks[2];
-    document.getElementById('e_part_name').value = chunks[0];
-    document.getElementById('e_part_no').value = chunks[1];
-    document.getElementById('e_total_qty').value = chunks[3];
-    
-    if (resData.exists) {
-        highlightSavedProcesses(resData.savedProcesses, 'end');
-        
-        // --- ส่วนที่เพิ่มใหม่: กรอง Dropdown สำหรับการจบงาน ---
-        var dropdown = document.getElementById('end_process_select');
-        var allowed = resData.availableEndProcesses || []; // รับค่ามาจาก GS
-        
-        // 1. ซ่อนทุก Option ก่อน (ยกเว้น option แรกที่เป็นตัวเลือกว่าง)
-        for (var i = 1; i < dropdown.options.length; i++) {
-            dropdown.options[i].style.display = "none";
-        }
-        
-        // 2. แสดงเฉพาะที่อยู่ใน list 'allowed'
-        if (allowed.length > 0) {
-            allowed.forEach(procName => {
-                var opt = dropdown.querySelector('option[value="' + procName + '"]');
-                if (opt) opt.style.display = "block";
-            });
-            dropdown.value = allowed[0]; // เลือกค่าที่ค้างอยู่ให้อัตโนมัติ
-        } else {
-            alert("⚠️ ไม่พบขั้นตอนที่กำลังรันค้างอยู่สำหรับ Order นี้!");
-            dropdown.value = "";
-        }
-        // ----------------------------------------------------
-    }
-}
+                            document.getElementById('e_order_no').value = chunks[2];
+                            document.getElementById('e_part_name').value = chunks[0];
+                            document.getElementById('e_part_no').value = chunks[1];
+                            document.getElementById('e_total_qty').value = chunks[3];
+                            
+                            if (resData.exists) {
+                                highlightSavedProcesses(resData.savedProcesses, 'end');
+                                
+                                var dropdown = document.getElementById('end_process_select');
+                                var allowed = resData.availableEndProcesses || [];
+                                for (var i = 1; i < dropdown.options.length; i++) {
+                                    dropdown.options[i].style.display = "none";
+                                }
+                                if (allowed.length > 0) {
+                                    allowed.forEach(procName => {
+                                        var opt = dropdown.querySelector('option[value="' + procName + '"]');
+                                        if (opt) opt.style.display = "block";
+                                    });
+                                    dropdown.value = allowed[0];
+                                } else {
+                                    alert("⚠️ ไม่พบขั้นตอนที่กำลังรันค้างอยู่สำหรับ Order นี้!");
+                                    dropdown.value = "";
+                                }
+                            }
+                        }
+                    }
                 })
                 .catch(err => { hideLoader(); alert("❌ การส่งข้อมูลล้มเหลว: " + err); });
             } else {
