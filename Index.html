@@ -102,7 +102,7 @@
         <div id="welcomePage" class="page active">
             <div style="margin-bottom: 24px; text-align: center;">
                 <h3 style="font-size: 16px; font-weight: 700; color: #0f172a;">ระบบบันทึกเวลาและสถานะการผลิต</h3>
-                <p style="font-size: 12px; color: #64748b; margin-top: 2px;">Select operation sequence to update ERP log</p>
+                <p style="font-size: 12px; color: #64748b; margin-top: 2px;">Select operation sequence to update  log</p>
             </div>
             <button onclick="navigateTo('startPage')" class="btn-menu btn-menu-start">
                 <div>
@@ -229,7 +229,7 @@
     </div>
 
     <script>
-        const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxhxnnY16fMtY21ujGtKJX1JMr5611ZuXnymPmSTxMgCPvu9I3td6BpaS87MrhkZD6G/exec"; 
+        const BACKEND_URL = "https://script.google.com/macros/s/AKfycbw0m4hvsqTZUqM85glcLdfMw7V5oqikaUK4i-HBEBRxDdQpchxZVEcD0dZJ8D6O_zY2/exec"; 
 
         let html5QrcodeScanner = null;
         
@@ -289,7 +289,7 @@
             let chunks = rawText.split('|').map(item => item.trim()).filter(item => item !== "");
             
             if (chunks.length === 5) {
-                showLoader("CONNECTING ERP CLOUD...");
+                showLoader("CONNECTING  CLOUD...");
                 resetDropdownStyles();
                 
                 fetch(BACKEND_URL, {
@@ -314,16 +314,37 @@
                                 highlightSavedProcesses(resData.savedProcesses, 'start');
                             }
                         } else {
-                            document.getElementById('e_order_no').value = chunks[2];
-                            document.getElementById('e_part_name').value = chunks[0];
-                            document.getElementById('e_part_no').value = chunks[1];
-                            document.getElementById('e_total_qty').value = chunks[3];
-                            
-                            if (resData.exists) {
-                                highlightSavedProcesses(resData.savedProcesses, 'end');
-                            }
-                        }
-                    }
+                      document.getElementById('e_order_no').value = chunks[2];
+    document.getElementById('e_part_name').value = chunks[0];
+    document.getElementById('e_part_no').value = chunks[1];
+    document.getElementById('e_total_qty').value = chunks[3];
+    
+    if (resData.exists) {
+        highlightSavedProcesses(resData.savedProcesses, 'end');
+        
+        // --- ส่วนที่เพิ่มใหม่: กรอง Dropdown สำหรับการจบงาน ---
+        var dropdown = document.getElementById('end_process_select');
+        var allowed = resData.availableEndProcesses || []; // รับค่ามาจาก GS
+        
+        // 1. ซ่อนทุก Option ก่อน (ยกเว้น option แรกที่เป็นตัวเลือกว่าง)
+        for (var i = 1; i < dropdown.options.length; i++) {
+            dropdown.options[i].style.display = "none";
+        }
+        
+        // 2. แสดงเฉพาะที่อยู่ใน list 'allowed'
+        if (allowed.length > 0) {
+            allowed.forEach(procName => {
+                var opt = dropdown.querySelector('option[value="' + procName + '"]');
+                if (opt) opt.style.display = "block";
+            });
+            dropdown.value = allowed[0]; // เลือกค่าที่ค้างอยู่ให้อัตโนมัติ
+        } else {
+            alert("⚠️ ไม่พบขั้นตอนที่กำลังรันค้างอยู่สำหรับ Order นี้!");
+            dropdown.value = "";
+        }
+        // ----------------------------------------------------
+    }
+}
                 })
                 .catch(err => { hideLoader(); alert("❌ การส่งข้อมูลล้มเหลว: " + err); });
             } else {
@@ -459,19 +480,34 @@
         function hideLoader() { document.getElementById('loader').classList.add('hidden'); }
         
         function clearAndBack() {
-            closeCamera();
-            document.getElementById('start_barcode_input').value = ''; document.getElementById('end_barcode_input').value = '';
-            document.getElementById('s_part_name').value = ''; document.getElementById('s_part_no').value = '';
-            document.getElementById('s_order_no').value = ''; document.getElementById('s_mac_no').value = '';
-            document.getElementById('s_qty').value = '';
-            document.getElementById('e_fg').value = ''; document.getElementById('e_ng').value = '';
-            document.getElementById('e_order_no').value = ''; document.getElementById('e_part_name').value = '';
-            document.getElementById('e_part_no').value = '';
-            document.getElementById('e_total_qty').value = '';
-            document.getElementById('start_process_select').value = ''; document.getElementById('end_process_select').value = '';
-            setLockSubmitState(false); resetDropdownStyles();
-            navigateTo('welcomePage');
-        }
+    closeCamera();
+    document.getElementById('start_barcode_input').value = ''; 
+    document.getElementById('end_barcode_input').value = '';
+    document.getElementById('s_part_name').value = ''; 
+    document.getElementById('s_part_no').value = '';
+    document.getElementById('s_order_no').value = ''; 
+    document.getElementById('s_mac_no').value = '';
+    document.getElementById('s_qty').value = '';
+    document.getElementById('e_fg').value = ''; 
+    document.getElementById('e_ng').value = '';
+    document.getElementById('e_order_no').value = ''; 
+    document.getElementById('e_part_name').value = '';
+    document.getElementById('e_part_no').value = '';
+    document.getElementById('e_total_qty').value = '';
+    document.getElementById('start_process_select').value = ''; 
+    document.getElementById('end_process_select').value = '';
+    
+    // --- เพิ่มส่วนนี้เพื่อคืนค่าการแสดงผล Dropdown ให้ครบทุกรายการ ---
+    var endDropdown = document.getElementById('end_process_select');
+    for (var i = 0; i < endDropdown.options.length; i++) {
+        endDropdown.options[i].style.display = "block";
+    }
+    // ---------------------------------------------------------
+
+    setLockSubmitState(false); 
+    resetDropdownStyles();
+    navigateTo('welcomePage');
+}
     </script>
 </body>
 </html>
