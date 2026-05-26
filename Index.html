@@ -229,7 +229,7 @@
     </div>
 
     <script>
-        const BACKEND_URL = "https://script.google.com/macros/s/AKfycbw0m4hvsqTZUqM85glcLdfMw7V5oqikaUK4i-HBEBRxDdQpchxZVEcD0dZJ8D6O_zY2/exec"; 
+        const BACKEND_URL = "https://script.google.com/macros/s/AKfycbzc35RJQAaAdDUaiuRvs9XVivN2TIFuy1YKpbghkYVWyrlv_qp38wyiLP-hye8HD6hB/exec"; 
 
         let html5QrcodeScanner = null;
         
@@ -442,7 +442,7 @@
             .catch(err => { hideLoader(); setLockSubmitState(false); alert("❌ TRANSMISSION ERROR: " + err); });
         }
 
-        function submitEndData() {
+       function submitEndData() {
             var proc = document.getElementById('end_process_select').value;
             if(!proc) { alert("⚠️ กรุณาเลือกขั้นตอนปิดงานก่อนทำการส่งข้อมูล!"); return; }
             if(!document.getElementById('e_order_no').value) { alert("⚠️ ยังไม่ได้ดึงข้อมูลบาร์โค้ดใบงาน!"); return; }
