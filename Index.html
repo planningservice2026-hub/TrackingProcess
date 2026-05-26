@@ -405,8 +405,8 @@
                 qty: document.getElementById('s_qty').value,
                 mac_no: document.getElementById('s_mac_no').value.toUpperCase(),
                 date: document.getElementById('s_date').value,
-                process_column: proc, 
-                time_value: new Date().toLocaleTimeString('th-TH', { hour12: false }).substring(0, 5)
+                timestamp: timestamp, // ส่งค่านี้แทน date และ time_value เดิม
+                process_column: proc
             };
             fetch(BACKEND_URL, {
                 method: "POST",
@@ -439,7 +439,7 @@
                 process_column: proc,
                 fg_qty: document.getElementById('e_fg').value,
                 ng_qty: document.getElementById('e_ng').value,
-                time_value: new Date().toLocaleTimeString('th-TH', { hour12: false }).substring(0, 5)
+                timestamp: timestamp // ส่งค่านี้แทน time_value เดิม
             };
 
             fetch(BACKEND_URL, {
