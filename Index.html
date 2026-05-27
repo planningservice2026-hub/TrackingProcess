@@ -229,7 +229,7 @@
     </div>
 
     <script>
-        const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxoWJFdetBq_Ayo6L2D-HaERM1V_baq5H52OnHtYyVDXVDuBCqv0ab6zXiv2y2YRI6s/exec"; 
+        const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxSs6h4g1Xi7QSvhTiuQZLpLA5hRTj8UfPWWfFKxoPgbA7CBb2ZF7EgD4RsE3W9cAdd/exec"; 
 
         let html5QrcodeScanner = null;
         
@@ -403,77 +403,87 @@
             document.getElementById('btn_submit_end').disabled = isLock;
         }
 
-        function submitStartData() {
-            var proc = document.getElementById('start_process_select').value;
-            if(!proc) { alert("⚠️ กรุณาเลือกขั้นตอนปฏิบัติงานก่อนทำการส่งข้อมูล!"); return; }
-            if(!document.getElementById('s_order_no').value) { alert("⚠️ ยังไม่ได้ดึงข้อมูลบาร์โค้ดใบงาน!"); return; }
-            
-            setLockSubmitState(true);
-            showLoader("RECORDING START DATA...");
+function submitStartData() {
+    var rawProc = document.getElementById('start_process_select').value;
+    if(!rawProc) { alert("⚠️ กรุณาเลือกขั้นตอนปฏิบัติงานก่อนทำการส่งข้อมูล!"); return; }
+    if(!document.getElementById('s_order_no').value) { alert("⚠️ ยังไม่ได้ดึงข้อมูลบาร์โค้ดใบงาน!"); return; }
+    
+    // ทำความสะอาดข้อมูล
+    var proc = rawProc.trim().toLowerCase(); 
 
-                // สร้างตัวแปร Timestamp รวมที่นี่
-                // เปลี่ยนมาส่งเป็นรูปแบบ ISO String สากล (คอมพิวเตอร์เข้าใจตรงกันทั่วโลก และเป็น ค.ศ. 100%)
-                const now = new Date();
-                const timestamp = now.toISOString(); // ผลลัพธ์จะเป็นฟอร์แมต ค.ศ. เช่น "2026-05-27T03:32:00.000Z"
-            
-            var payload = {
-                part_name: document.getElementById('s_part_name').value.toUpperCase(),
-                part_no: document.getElementById('s_part_no').value.toUpperCase(),
-                order_no: document.getElementById('s_order_no').value.toUpperCase(),
-                qty: document.getElementById('s_qty').value,
-                mac_no: document.getElementById('s_mac_no').value.toUpperCase(),
-                timestamp: timestamp, // ส่งค่านี้แทน date และ time_value เดิม
-                process_column: proc
-            };
-            fetch(BACKEND_URL, {
-                method: "POST",
-                headers: { "Content-Type": "text/plain" },
-                body: JSON.stringify({ action: "recordStartData", payload: payload })
-            })
-            .then(res => res.json())
-            .then(res => {
-                hideLoader();
-                alert("✅ [START LOGGED] บันทึกเวลาเริ่มงานเข้าสู่คลาวด์เรียบร้อย!");
-                clearAndBack();
-            })
-            .catch(err => { hideLoader(); setLockSubmitState(false); alert("❌ TRANSMISSION ERROR: " + err); });
+    setLockSubmitState(true);
+    showLoader("RECORDING START DATA...");
+
+    var payload = {
+        part_name: document.getElementById('s_part_name').value.toUpperCase(),
+        part_no: document.getElementById('s_part_no').value.toUpperCase(),
+        order_no: document.getElementById('s_order_no').value.trim().toUpperCase(),
+        qty: document.getElementById('s_qty').value,
+        mac_no: document.getElementById('s_mac_no').value.toUpperCase(),
+        timestamp: new Date().toISOString(),
+        process_column: proc
+    };
+
+    fetch(BACKEND_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "recordStartData", payload: payload })
+    })
+    .then(res => res.json())
+    .then(res => {
+        hideLoader();
+        if(res.status === "success") {
+            alert("✅ บันทึกเวลาเริ่มงานเข้าสู่คลาวด์เรียบร้อย!");
+            clearAndBack();
+        } else {
+            alert("❌ ERROR: " + res.message);
+            setLockSubmitState(false);
         }
+    })
+    .catch(err => { hideLoader(); setLockSubmitState(false); alert("❌ TRANSMISSION ERROR: " + err); });
+}
 
-       function submitEndData() {
-            var proc = document.getElementById('end_process_select').value;
-            if(!proc) { alert("⚠️ กรุณาเลือกขั้นตอนปิดงานก่อนทำการส่งข้อมูล!"); return; }
-            if(!document.getElementById('e_order_no').value) { alert("⚠️ ยังไม่ได้ดึงข้อมูลบาร์โค้ดใบงาน!"); return; }
-            
-            setLockSubmitState(true);
-            showLoader("RECORDING COMPLETION DATA...");
+function submitEndData() {
+    var rawProc = document.getElementById('end_process_select').value;
+    if(!rawProc) { alert("⚠️ กรุณาเลือกขั้นตอนปิดงานก่อนทำการส่งข้อมูล!"); return; }
+    if(!document.getElementById('e_order_no').value) { alert("⚠️ ยังไม่ได้ดึงข้อมูลบาร์โค้ดใบงาน!"); return; }
+    
+    // ทำความสะอาดข้อมูล
+    var proc = rawProc.trim().toLowerCase();
 
-            const now = new Date();
-            const timestamp = now.toISOString(); // ผลลัพธ์จะเป็นฟอร์แมต ค.ศ. เช่น "2026-05-27T03:32:00.000Z"
-            var payload = {
-                order_no: document.getElementById('e_order_no').value.toUpperCase(),
-                process_column: proc,
-                fg_qty: document.getElementById('e_fg').value,
-                ng_qty: document.getElementById('e_ng').value,
-                timestamp: timestamp
-            };
+    setLockSubmitState(true);
+    showLoader("RECORDING COMPLETION DATA...");
 
-            fetch(BACKEND_URL, {
-                method: "POST",
-                headers: { "Content-Type": "text/plain" },
-                body: JSON.stringify({ action: "recordEndData", payload: payload })
-            })
-            .then(res => res.json())
-            .then(res => {
-                hideLoader();
-                alert("✅ [END LOGGED] บันทึกสรุปจบงานเรียบร้อย!");
-                clearAndBack();
-            })
-            .catch(err => { 
-                hideLoader(); 
-                setLockSubmitState(false); 
-                alert("❌ DATABASE TRANSMISSION ERROR: " + err); 
-            });
+    var payload = {
+        order_no: document.getElementById('e_order_no').value.trim().toUpperCase(),
+        process_column: proc,
+        fg_qty: document.getElementById('e_fg').value,
+        ng_qty: document.getElementById('e_ng').value,
+        timestamp: new Date().toISOString()
+    };
+
+    fetch(BACKEND_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "recordEndData", payload: payload })
+    })
+    .then(res => res.json())
+    .then(res => {
+        hideLoader();
+        if(res.status === "success") {
+            alert("✅ บันทึกสรุปจบงานเรียบร้อย!");
+            clearAndBack();
+        } else {
+            alert("❌ ERROR: " + res.message);
+            setLockSubmitState(false);
         }
+    })
+    .catch(err => { 
+        hideLoader(); 
+        setLockSubmitState(false); 
+        alert("❌ DATABASE ERROR: " + err); 
+    });
+}
 
         function showLoader(text) { document.getElementById('loader_text').innerText = text; document.getElementById('loader').classList.remove('hidden'); }
         function hideLoader() { document.getElementById('loader').classList.add('hidden'); }
@@ -506,6 +516,30 @@
     setLockSubmitState(false); 
     resetDropdownStyles();
     navigateTo('welcomePage');
+}
+// ฟังก์ชันกลางสำหรับส่งข้อมูล (ใช้แทนการเขียน fetch ซ้ำๆ)
+function sendData(action, payload, successMsg) {
+    fetch(BACKEND_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: action, payload: payload })
+    })
+    .then(res => res.json())
+    .then(res => {
+        hideLoader();
+        // ตรวจสอบสถานะการทำงานจากหลังบ้าน
+        if (res.status === "SUCCESS_START" || res.status === "SUCCESS_END") {
+            alert("✅ " + successMsg);
+            clearAndBack();
+        } else {
+            alert("❌ บันทึกไม่สำเร็จ: " + res.status);
+        }
+    })
+    .catch(err => { 
+        hideLoader(); 
+        setLockSubmitState(false); 
+        alert("❌ ERROR: " + err); 
+    });
 }
     </script>
 </body>
