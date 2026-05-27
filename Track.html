@@ -202,6 +202,7 @@
 
         // 🌟 ฟังก์ชันจัดการแสดงผลเวลา: ดึงจาก Sheet มาแสดงตรงๆ ถ้าโครงสร้างเป็นวันที่อยู่แล้ว
         function formatTimeDisplay(rawVal) {
+    console.log("👉 ค่าที่วิ่งเข้ามาในฟังก์ชันคือ:", rawVal); // 🌟 เพิ่มบรรทัดนี้เพื่อรีดความจริง
             if (!rawVal) return "-";
             let str = String(rawVal).trim();
             if (str === "" || str === "-" || str.toLowerCase() === "null" || str.toLowerCase() === "undefined") return "-";
