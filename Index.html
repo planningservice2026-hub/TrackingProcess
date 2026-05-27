@@ -448,7 +448,7 @@
             showLoader("RECORDING COMPLETION DATA...");
 
             const now = new Date();
-            const timestamp = now.toLocaleDateString('th-TH') + " " + now.toLocaleTimeString('th-TH', { hour12: false });
+            const timestamp = now.toISOString(); // ผลลัพธ์จะเป็นฟอร์แมต ค.ศ. เช่น "2026-05-27T03:32:00.000Z"
             var payload = {
                 order_no: document.getElementById('e_order_no').value.toUpperCase(),
                 process_column: proc,
