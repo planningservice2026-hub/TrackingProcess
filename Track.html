@@ -162,7 +162,6 @@
 
         document.addEventListener("DOMContentLoaded", () => {
             fetchLiveStoreData();
-            // ตั้ง Auto-Refresh ทุกๆ 60 วินาที (60000 ms)
             setInterval(fetchLiveStoreData, 60000); 
         });
 
@@ -201,6 +200,51 @@
             document.getElementById("lastUpdateTime").innerText = "อัปเดตล่าสุด: " + timeStr;
         }
 
+        // 🌟 ฟังก์ชันจัดการแสดงผลเวลา: ดึงจาก Sheet มาแสดงตรงๆ ถ้าโครงสร้างเป็นวันที่อยู่แล้ว
+        function formatTimeDisplay(rawVal) {
+            if (!rawVal) return "-";
+            let str = String(rawVal).trim();
+            if (str === "" || str === "-" || str.toLowerCase() === "null" || str.toLowerCase() === "undefined") return "-";
+            
+            // ถ้าข้อมูลใน Sheet ส่งมามีเครื่องหมาย / และ : อยู่แล้ว ให้ส่งค่ากลับไปแสดงผลทันที
+            if (str.includes('/') && str.includes(':')) {
+                return str;
+            }
+            
+            // กรณีหลุดมาเป็นรูปแบบ Date Object ของระบบ ให้จัดแจงแปลงฟอร์แมตไทยตามสั่ง
+            let d = new Date(rawVal);
+            if (isNaN(d.getTime()) || d.getTime() === 0) return str; 
+            
+            let day = d.getDate();
+            let month = d.getMonth() + 1;
+            let year = d.getFullYear();
+            if (year < 2200) year += 543; // ปรับเป็น พ.ศ.
+            let hh = d.getHours().toString().padStart(2, '0');
+            let mm = d.getMinutes().toString().padStart(2, '0');
+            return `${day}/${month}/${year} ${hh}:${mm}`;
+        }
+
+        // ฟังก์ชันช่วยแกะวันที่สำหรับเรียงลำดับ (Sorting) บนหน้าเว็บให้ถูกต้อง
+        function parseDateSafely(val) {
+            if (!val) return new Date(0);
+            let d = new Date(val);
+            if (!isNaN(d.getTime())) return d;
+            let str = String(val).trim();
+            if (str.includes('/')) {
+                let parts = str.split(/[\sT,]+/);
+                let dParts = parts[0].split('/');
+                let tParts = parts[1] ? parts[1].split(':') : ['00', '00'];
+                if (dParts.length === 3) {
+                    let day = parseInt(dParts[0], 10);
+                    let month = parseInt(dParts[1], 10) - 1;
+                    let year = parseInt(dParts[2], 10);
+                    if (year > 2500) year -= 543; 
+                    return new Date(year, month, day, parseInt(tParts[0]||0), parseInt(tParts[1]||0));
+                }
+            }
+            return new Date(0);
+        }
+
         function renderTableDashboard(dataArray) {
             let html = "";
             let totalActive = dataArray.length;
@@ -221,8 +265,8 @@
                         id: key,
                         name: stepNames[key] || key.toUpperCase(),
                         status: isObj ? val.status : val,
-                        startTime: (isObj && val.startTime) ? new Date(val.startTime) : ((isObj && val.timestamp) ? new Date(val.timestamp) : new Date(0)),
-                        endTime: (isObj && val.endTime) ? new Date(val.endTime) : new Date(0)
+                        startTime: (isObj && val.startTime) ? parseDateSafely(val.startTime) : ((isObj && val.timestamp) ? parseDateSafely(val.timestamp) : new Date(0)),
+                        endTime: (isObj && val.endTime) ? parseDateSafely(val.endTime) : new Date(0)
                     };
                 });
 
@@ -281,15 +325,6 @@
             return `<div class="${cls}"><div class="seq-badge">${sequenceNumber}</div><div>${label}</div></div>`;
         }
 
-        function formatDate(dateObj) {
-            if (!dateObj || isNaN(dateObj.getTime()) || dateObj.getTime() === 0) return "-";
-            let d = dateObj.getDate().toString().padStart(2, '0');
-            let mo = (dateObj.getMonth() + 1).toString().padStart(2, '0');
-            let h = dateObj.getHours().toString().padStart(2, '0');
-            let m = dateObj.getMinutes().toString().padStart(2, '0');
-            return `${d}/${mo} ${h}:${m}`;
-        }
-
         function openExtendedModal(index) {
             let item = globalCachedStore[index];
             document.getElementById('modalOrderNo').innerText = "📄 FACTORY ROUTING TRACK - ORDER #" + (item.orderNo || '-');
@@ -302,8 +337,10 @@
                     id: key,
                     name: stepNames[key] || key.toUpperCase(),
                     status: isObj ? val.status : val,
-                    startTime: (isObj && val.startTime) ? new Date(val.startTime) : ((isObj && val.timestamp) ? new Date(val.timestamp) : new Date(0)),
-                    endTime: (isObj && val.endTime) ? new Date(val.endTime) : new Date(0)
+                    // 🌟 แอบส่องข้อมูลดิบเก็บไว้เพื่อให้ฟังก์ชันดึงไปแสดงผลโดยตรง ไม่โดนแปลงรูปแบบทิ้ง
+                    rawStart: isObj ? (val.startTime || val.timestamp || "-") : "-",
+                    rawEnd: isObj ? (val.endTime || "-") : "-",
+                    startTime: (isObj && val.startTime) ? parseDateSafely(val.startTime) : ((isObj && val.timestamp) ? parseDateSafely(val.timestamp) : new Date(0))
                 };
             });
 
@@ -320,8 +357,9 @@
                 if(step.status === "จบงาน") { cls = "detail-step-card done"; statusText = "🟢 COMPLETED"; }
                 else if(step.status === "รันอยู่") { cls = "detail-step-card wip"; statusText = "⚡ PROCESSING"; }
 
-                let startStr = formatDate(step.startTime);
-                let endStr = step.status === "จบงาน" ? formatDate(step.endTime) : "-"; 
+                // 🌟 เรียกใช้ฟังก์ชันดึงค่าเวลาแสดงผล ดึงข้อมูลที่ลงทะเบียนไว้มาหยอดได้เลย
+                let startStr = formatTimeDisplay(step.rawStart);
+                let endStr = formatTimeDisplay(step.rawEnd); 
                 let sequenceNum = (step.status === "รันอยู่" || step.status === "จบงาน") ? (i + 1) : "-";
 
                 return `
@@ -355,17 +393,11 @@
         }
 
         function sortTable(column) {
-            if (sortCol === column) {
-                sortAsc = !sortAsc;
-            } else {
-                sortCol = column;
-                sortAsc = true;
-            }
+            if (sortCol === column) { sortAsc = !sortAsc; } 
+            else { sortCol = column; sortAsc = true; }
             
             globalCachedStore.sort((a, b) => {
-                let valA = a[column];
-                let valB = b[column];
-                
+                let valA = a[column]; let valB = b[column];
                 if (typeof valA === 'string') valA = valA.toLowerCase();
                 if (typeof valB === 'string') valB = valB.toLowerCase();
                 
@@ -373,19 +405,15 @@
                 if (valA > valB) return sortAsc ? 1 : -1;
                 return 0;
             });
-            
             renderTableDashboard(globalCachedStore);
         }
 
         function exportToCSV() {
             if(globalCachedStore.length === 0) {
-                alert("ไม่มีข้อมูลสำหรับ Export");
-                return;
+                alert("ไม่มีข้อมูลสำหรับ Export"); return;
             }
-            
             let headers = ["วันที่ลงคิว", "Order No", "Part Name", "Part No", "Mac No", "Category", "Total Qty", "FG Qty", "NG Qty"];
             let csvContent = "data:text/csv;charset=utf-8,\uFEFF" + headers.join(",") + "\n";
-            
             globalCachedStore.forEach(row => {
                 let r = [
                     row.date || "", row.orderNo || "", `"${row.partName || ""}"`, row.partNo || "", 
@@ -393,14 +421,11 @@
                 ];
                 csvContent += r.join(",") + "\n";
             });
-            
             let encodedUri = encodeURI(csvContent);
             let link = document.createElement("a");
             link.setAttribute("href", encodedUri);
             link.setAttribute("download", "Production_Report.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
         }
     </script>
 </body>
