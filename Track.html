@@ -18,54 +18,69 @@
             background-color: #0f172a; padding: 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid #38bdf8;
         }
         .monitor-title { color: #ffffff; font-size: 22px; font-weight: 800; letter-spacing: 0.05em; }
-        .btn-refresh {
-            background-color: #38bdf8; color: #0f172a; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: all 0.2s;
-        }
-        .btn-refresh:hover { background-color: #7dd3fc; }
+        .header-actions { display: flex; gap: 12px; align-items: center; }
+        .last-update { font-size: 12px; color: #94a3b8; }
+        
+        button { border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: all 0.2s; font-size: 13px; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-refresh { background-color: #38bdf8; color: #0f172a; }
+        .btn-refresh:hover:not(:disabled) { background-color: #7dd3fc; }
+        .btn-export { background-color: #10b981; color: #ffffff; }
+        .btn-export:hover { background-color: #34d399; }
+
         .kpi-dashboard {
             display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; padding: 20px 24px; background-color: #111827; border-bottom: 1px solid #334155;
         }
         .kpi-card { background: #1e293b; padding: 16px; border-radius: 10px; border: 1px solid #334155; }
         .kpi-title { font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: bold; }
         .kpi-value { font-size: 24px; font-weight: 800; color: #ffffff; margin-top: 4px; }
+        
         .search-box { padding: 16px 24px; background-color: #1e293b; border-bottom: 1px solid #334155; display: flex; gap: 12px; align-items: center; }
         .search-input { padding: 10px 16px; border-radius: 6px; border: 1px solid #475569; width: 300px; font-size: 14px; background-color: #0f172a; color: #ffffff; outline: none; }
+        
         .table-wrapper { overflow-x: auto; padding: 16px; }
         table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
-        th { background-color: #0f172a; color: #94a3b8; font-weight: 700; padding: 16px; text-transform: uppercase; font-size: 11px; }
+        th { background-color: #0f172a; color: #94a3b8; font-weight: 700; padding: 16px; text-transform: uppercase; font-size: 11px; cursor: pointer; user-select: none; transition: background 0.2s; }
+        th:hover { background-color: #111827; color: #38bdf8; }
         td { padding: 16px; border-bottom: 1px solid #334155; color: #cbd5e1; vertical-align: middle; }
         .clickable-row { cursor: pointer; transition: background-color 0.2s; }
         .clickable-row:hover { background: linear-gradient(90deg, #1e293b 0%, #24344d 100%); }
         .click-hint { font-size: 11px; color: #38bdf8; display: block; margin-top: 4px; font-weight: bold; animation: pulse 2s infinite; }
+        
         .progress-container { width: 120px; background-color: #334155; border-radius: 4px; overflow: hidden; }
         .progress-bar { background-color: #10b981; height: 6px; border-radius: 4px; }
-        .timeline-flow { display: flex; align-items: center; gap: 4px; background: #0f172a; padding: 8px; border-radius: 8px; }
-        .step { flex: 1; padding: 6px; background-color: #1e293b; border-radius: 4px; font-size: 11px; text-align: center; border: 1px solid #334155; }
+        
+        /* Sequence Badges & Timeline */
+        .timeline-flow { display: flex; align-items: center; gap: 4px; background: #0f172a; padding: 8px; border-radius: 8px; flex-wrap: wrap; }
+        .step { flex: 1; padding: 6px; background-color: #1e293b; border-radius: 4px; font-size: 11px; text-align: center; border: 1px solid #334155; min-width: 60px; }
         .step.done { background-color: rgba(22, 163, 74, 0.2); border-color: #22c55e; color: #4ade80; }
         .step.wip { background-color: rgba(2, 132, 199, 0.3); border-color: #38bdf8; color: #38bdf8; font-weight: bold; animation: pulse 2s infinite; }
         .step.pending { color: #64748b; }
-        .step-time { display: block; font-family: monospace; font-size: 9px; color: #94a3b8; margin-top: 2px;}
-        .arrow-next { color: #475569; font-size: 11px; }
+        .arrow-next { color: #475569; font-size: 11px; margin: 0 2px; }
+        
+        .seq-badge { display: inline-block; background-color: #0f172a; color: #38bdf8; border-radius: 50%; width: 16px; height: 16px; line-height: 14px; text-align: center; font-size: 9px; margin-bottom: 4px; border: 1px solid #334155; font-weight: bold; }
+        .detail-step-card .seq-badge { width: 22px; height: 22px; line-height: 20px; font-size: 12px; margin-bottom: 8px; }
+        
         .part-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-top: 4px; background-color: #475569; color: white; }
         .badge-automotive { background-color: #3b82f6; }
         .badge-electronics { background-color: #a855f7; }
-        .modal-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); justify-content: center; align-items: center; z-index: 999; padding: 20px;
-        }
-        .modal-content {
-            background-color: #1e293b; width: 100%; max-width: 1100px; border-radius: 16px;
-            border: 2px solid #475569; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); overflow: hidden; animation: slideUp 0.3s ease-out;
-        }
+        
+        /* Modal */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); justify-content: center; align-items: center; z-index: 999; padding: 20px; }
+        .modal-content { background-color: #1e293b; width: 100%; max-width: 1100px; border-radius: 16px; border: 2px solid #475569; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); overflow: hidden; animation: slideUp 0.3s ease-out; }
         .modal-header { background-color: #0f172a; padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #38bdf8; }
-        .modal-close { background: none; border: none; color: #94a3b8; font-size: 28px; cursor: pointer; }
+        .modal-close { background: none; border: none; color: #94a3b8; font-size: 28px; cursor: pointer; padding: 0; }
         .modal-close:hover { color: #f87171; }
         .modal-body { padding: 24px; }
+        
         .detail-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-top: 16px; }
         .detail-step-card { background-color: #0f172a; padding: 14px; border-radius: 8px; border: 1px solid #334155; text-align: center; }
         .detail-step-card.done { border-color: #22c55e; background-color: rgba(22, 163, 74, 0.05); color: #4ade80; }
         .detail-step-card.wip { border-color: #38bdf8; background-color: rgba(2, 132, 199, 0.1); color: #38bdf8; font-weight: bold; animation: cardPulse 2s infinite; }
         .detail-step-card.pending { opacity: 0.3; color: #64748b; }
+        
+        .time-box { display: flex; justify-content: space-between; font-size: 10px; color: #94a3b8; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #334155; text-align: left; }
+
         @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
         @keyframes cardPulse { 0%, 100% { border-color: #38bdf8; } 50% { border-color: #0284c7; } }
         @keyframes slideUp { from { transform: translateY(12px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -77,9 +92,13 @@
         <div class="monitor-header">
             <div>
                 <div class="monitor-title">📊 SMART MULTI-PART MONITOR BOARD</div>
-                <div style="font-size: 12px; color: #94a3b8; margin-top: 4px;">ระบบมอนิเตอร์อัจฉริยะ (ย่อหน้าต่างอัตโนมัติ / คลิกที่แถวเพื่อกางดูไทม์ไลน์ 10 สถานีดิบ)</div>
+                <div style="font-size: 12px; color: #94a3b8; margin-top: 4px;">ระบบมอนิเตอร์อัจฉริยะ (อัปเดตอัตโนมัติ / คลิกแถวเพื่อดูไทม์ไลน์)</div>
             </div>
-            <button onclick="fetchLiveStoreData()" class="btn-refresh">🔄 REFRESH BOARD</button>
+            <div class="header-actions">
+                <span class="last-update" id="lastUpdateTime">อัปเดตล่าสุด: กำลังโหลด...</span>
+                <button onclick="exportToCSV()" class="btn-export">📥 EXPORT CSV</button>
+                <button onclick="fetchLiveStoreData()" id="btnRefresh" class="btn-refresh">🔄 REFRESH</button>
+            </div>
         </div>
 
         <div class="kpi-dashboard">
@@ -98,11 +117,11 @@
             <table>
                 <thead>
                     <tr>
-                        <th style="width: 10%;">วันที่ลงคิว</th>
-                        <th style="width: 15%;">ใบงานผลิต (Order)</th>
-                        <th style="width: 25%;">ข้อมูลสินค้า / เครื่องจักร</th>
-                        <th style="width: 35%;">สเตตัสกระบวนการผลิต (หลัก)</th>
-                        <th style="width: 15%;">ความคืบหน้า (QA)</th>
+                        <th style="width: 10%;" onclick="sortTable('date')">วันที่ลงคิว ↕</th>
+                        <th style="width: 15%;" onclick="sortTable('orderNo')">ใบงานผลิต (Order) ↕</th>
+                        <th style="width: 25%;" onclick="sortTable('partName')">ข้อมูลสินค้า / เครื่องจักร ↕</th>
+                        <th style="width: 35%;">ไทม์ไลน์ตามลำดับหน้างาน (Real-Time)</th>
+                        <th style="width: 15%;" onclick="sortTable('fgQty')">ความคืบหน้า (QA) ↕</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody">
@@ -122,22 +141,36 @@
                 <button class="modal-close" onclick="closeModal()">&times;</button>
             </div>
             <div class="modal-body">
-                <h3 style="color: #38bdf8; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: bold;">ผังลำดับไทม์ไลน์สถานีการผลิตทั้ง 10 ขั้นตอน (สแกนสดจากแท็บโรงงาน)</h3>
+                <h3 style="color: #38bdf8; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: bold;">ลำดับการผลิตจริงและเวลาที่ใช้ทำงาน</h3>
                 <div class="detail-grid" id="modalTimelineGrid"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // 🌟 แก้ไข: วางลิงก์ URL เว็บแอปของพี่ที่ได้มาจาก Google Apps Script ในช่องด้านล่างนี้ครับ
+        // วางลิงก์ Web App ของ Google Apps Script ที่นี่
         const BACKEND_URL = "https://script.google.com/macros/s/AKfycbyRxrUWQvdzHkUtOTutSORSpCUWmqsQRKBeeqsMlEunopI0sVpYmxgejm9p6ud5F-xp/exec"; 
 
         let globalCachedStore = [];
-        document.addEventListener("DOMContentLoaded", fetchLiveStoreData);
+        let sortCol = "";
+        let sortAsc = true;
+
+        const stepNames = {
+            'mac': '🏭 MAC', 'p1': '💮 P1', 'p2': '💮 P2', 'p3': '💮 P3', 'p4': '💮 P4', 
+            'cut1': '✂️ CUT1', 'cut2': '✂️ CUT2', 'cut3': '✂️ CUT3', 'cut4': '✂️ CUT4', 'stamp': '🔥 STAMP'
+        };
+
+        document.addEventListener("DOMContentLoaded", () => {
+            fetchLiveStoreData();
+            // ตั้ง Auto-Refresh ทุกๆ 60 วินาที (60000 ms)
+            setInterval(fetchLiveStoreData, 60000); 
+        });
 
         function fetchLiveStoreData() {
-            document.getElementById("tableBody").innerHTML = `<tr><td colspan="5" style="text-align:center; padding:40px; color:#38bdf8; font-weight:bold; animation:pulse 1s infinite;">🔄 REFRESHING CLOUD STORAGE CORRELATION...</td></tr>`;
-            
+            let btn = document.getElementById("btnRefresh");
+            btn.disabled = true;
+            btn.innerText = "⏳ LOADING...";
+
             fetch(BACKEND_URL, {
                 method: "POST",
                 headers: { "Content-Type": "text/plain" },
@@ -148,11 +181,24 @@
                 if(response.status === "success") {
                     globalCachedStore = response.data;
                     renderTableDashboard(globalCachedStore);
+                    updateLastRefreshTime();
                 }
             })
             .catch(err => {
-                document.getElementById("tableBody").innerHTML = `<tr><td colspan="5" style="text-align:center; padding:40px; color:#f87171; font-weight:bold;">❌ คอนเน็กชั่นผิดพลาด ไม่สามารถดึงฐานข้อมูลได้: ${err}</td></tr>`;
+                if(globalCachedStore.length === 0) {
+                    document.getElementById("tableBody").innerHTML = `<tr><td colspan="5" style="text-align:center; padding:40px; color:#f87171; font-weight:bold;">❌ ไม่สามารถเชื่อมต่อฐานข้อมูลได้: ${err}</td></tr>`;
+                }
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.innerText = "🔄 REFRESH";
             });
+        }
+
+        function updateLastRefreshTime() {
+            let now = new Date();
+            let timeStr = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0') + ":" + now.getSeconds().toString().padStart(2, '0');
+            document.getElementById("lastUpdateTime").innerText = "อัปเดตล่าสุด: " + timeStr;
         }
 
         function renderTableDashboard(dataArray) {
@@ -161,51 +207,61 @@
             let wipCount = 0; let totalFg = 0; let totalNg = 0;
             
             if(totalActive === 0) {
-                document.getElementById("tableBody").innerHTML = `<tr><td colspan="5" style="text-align:center; padding:40px; color:#94a3b8;">📭 ไม่พบประวัติออเดอร์ในตารางข้อมูล</td></tr>`;
+                document.getElementById("tableBody").innerHTML = `<tr><td colspan="5" style="text-align:center; padding:40px; color:#94a3b8;">📭 ไม่พบประวัติออเดอร์</td></tr>`;
                 return;
             }
             
             dataArray.forEach((row, index) => {
-                totalFg += row.fgQty; totalNg += row.ngQty;
-                let isWip = Object.values(row.times).some(t => t === "รันอยู่");
-                if(isWip) wipCount++;
+                totalFg += (row.fgQty || 0); totalNg += (row.ngQty || 0);
+                
+                let processArray = Object.keys(row.times || {}).map(key => {
+                    let val = row.times[key];
+                    let isObj = typeof val === 'object' && val !== null;
+                    return {
+                        id: key,
+                        name: stepNames[key] || key.toUpperCase(),
+                        status: isObj ? val.status : val,
+                        startTime: (isObj && val.startTime) ? new Date(val.startTime) : ((isObj && val.timestamp) ? new Date(val.timestamp) : new Date(0)),
+                        endTime: (isObj && val.endTime) ? new Date(val.endTime) : new Date(0)
+                    };
+                });
+
+                let activeProcesses = processArray.filter(p => p.status === "รันอยู่" || p.status === "จบงาน");
+                activeProcesses.sort((a, b) => a.startTime.getTime() - b.startTime.getTime());
+                
+                if (activeProcesses.some(p => p.status === "รันอยู่")) wipCount++;
                 
                 let pClass = "part-badge";
                 if(row.category === "Automotive") pClass += " badge-automotive";
                 if(row.category === "Electronics") pClass += " badge-electronics";
                 
-                let percent = 0;
-                if(row.totalQty > 0) percent = Math.min(100, Math.round((row.fgQty / row.totalQty) * 100));
+                let percent = row.totalQty > 0 ? Math.min(100, Math.round((row.fgQty / row.totalQty) * 100)) : 0;
+                
+                let timelineHtml = activeProcesses.length > 0 
+                    ? activeProcesses.map((p, idx) => buildMiniStepBox(p.name, p.status, idx + 1)).join('<span class="arrow-next">➔</span>')
+                    : '<span style="color:#64748b; font-size: 11px; font-weight:bold;">⏳ รอดำเนินการผลิต...</span>';
                 
                 html += `
                     <tr class="clickable-row" onclick="openExtendedModal(${index})">
-                        <td>${row.date}</td>
+                        <td>${row.date || '-'}</td>
                         <td style="font-family:monospace; font-weight:bold; color:#38bdf8; font-size:15px;">
-                            ${row.orderNo}
+                            ${row.orderNo || '-'}
                             <span class="click-hint">📄 CLICK DETAIL</span>
                         </td>
                         <td>
-                            <div style="font-weight:bold; color:white;">${row.partName}</div>
-                            <div style="font-size:11px; color:#94a3b8; margin-top:2px;">PN: ${row.partNo} | MC: ${row.macNo || '-'}</div>
-                            <span class="${pClass}">${row.category}</span>
+                            <div style="font-weight:bold; color:white;">${row.partName || '-'}</div>
+                            <div style="font-size:11px; color:#94a3b8; margin-top:2px;">PN: ${row.partNo || '-'} | MC: ${row.macNo || '-'}</div>
+                            ${row.category ? `<span class="${pClass}">${row.category}</span>` : ''}
                         </td>
                         <td>
                             <div class="timeline-flow">
-                                ${buildMiniStepBox("🏭 MAC", row.times.mac)}
-                                <span class="arrow-next">➔</span>
-                                ${buildMiniStepBox("💮 P1", row.times.p1)}
-                                <span class="arrow-next">➔</span>
-                                ${buildMiniStepBox("💮 P2", row.times.p2)}
-                                <span class="arrow-next">➔</span>
-                                ${buildMiniStepBox("✂️ CUT1", row.times.cut1)}
-                                <span class="arrow-next">➔</span>
-                                ${buildMiniStepBox("🔥 STAMP", row.times.stamp)}
+                                ${timelineHtml}
                             </div>
                         </td>
                         <td>
-                            <div style="font-weight:bold; margin-bottom:4px; font-size:13px; color:#10b981;">FG: ${row.fgQty} / ${row.totalQty}</div>
+                            <div style="font-weight:bold; margin-bottom:4px; font-size:13px; color:#10b981;">FG: ${row.fgQty || 0} / ${row.totalQty || 0}</div>
                             <div class="progress-container"><div class="progress-bar" style="width: ${percent}%;"></div></div>
-                            <div style="font-size:11px; color:#f87171; margin-top:4px; font-weight:600;">Defect NG: ${row.ngQty} ชิ้น</div>
+                            <div style="font-size:11px; color:#f87171; margin-top:4px; font-weight:600;">Defect NG: ${row.ngQty || 0} ชิ้น</div>
                         </td>
                     </tr>
                 `;
@@ -218,78 +274,76 @@
             document.getElementById("kpi_ng").innerText = totalNg;
         }
 
-        function buildMiniStepBox(label, proc) {
-    // proc ตอนนี้เป็น Object {status: "...", ts: 12345}
-    let cls = "step pending";
-    if (proc.status === "จบงาน") cls = "step done";
-    if (proc.status === "รันอยู่") cls = "step wip";
-    return `<div class="${cls}">${label}</div>`;
-}
+        function buildMiniStepBox(label, status, sequenceNumber) {
+            let cls = "step pending";
+            if (status === "จบงาน") cls = "step done";
+            if (status === "รันอยู่") cls = "step wip";
+            return `<div class="${cls}"><div class="seq-badge">${sequenceNumber}</div><div>${label}</div></div>`;
+        }
+
+        function formatDate(dateObj) {
+            if (!dateObj || isNaN(dateObj.getTime()) || dateObj.getTime() === 0) return "-";
+            let d = dateObj.getDate().toString().padStart(2, '0');
+            let mo = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+            let h = dateObj.getHours().toString().padStart(2, '0');
+            let m = dateObj.getMinutes().toString().padStart(2, '0');
+            return `${d}/${mo} ${h}:${m}`;
+        }
 
         function openExtendedModal(index) {
-    let item = globalCachedStore[index];
-    document.getElementById('modalOrderNo').innerText = "📄 FACTORY ROUTING TRACK - ORDER #" + item.orderNo;
-    document.getElementById('modalPartName').innerText = `พาร์ท: ${item.partName} | เป้าหมาย: ${item.totalQty} ชิ้น`;
-    
-    // 1. เพิ่มตัวแปลชื่อขั้นตอน (Mapping)
-    const stepNames = {
-        'mac': '🏭 Machine Run', 'p1': '💮 Punch 1', 'p2': '💮 Punch 2', 
-        'p3': '💮 Punch 3', 'p4': '💮 Punch 4', 'cut1': '✂️ Cut 1', 
-        'cut2': '✂️ Cut 2', 'cut3': '✂️ Cut 3', 'cut4': '✂️ Cut 4', 'stamp': '🔥 Hotstamping'
-    };
+            let item = globalCachedStore[index];
+            document.getElementById('modalOrderNo').innerText = "📄 FACTORY ROUTING TRACK - ORDER #" + (item.orderNo || '-');
+            document.getElementById('modalPartName').innerText = `พาร์ท: ${item.partName || '-'} | เป้าหมาย: ${item.totalQty || 0} ชิ้น`;
+            
+            let processArray = Object.keys(item.times || {}).map(key => {
+                let val = item.times[key];
+                let isObj = typeof val === 'object' && val !== null;
+                return {
+                    id: key,
+                    name: stepNames[key] || key.toUpperCase(),
+                    status: isObj ? val.status : val,
+                    startTime: (isObj && val.startTime) ? new Date(val.startTime) : ((isObj && val.timestamp) ? new Date(val.timestamp) : new Date(0)),
+                    endTime: (isObj && val.endTime) ? new Date(val.endTime) : new Date(0)
+                };
+            });
 
-    // 2. แปลงข้อมูลและจัดเรียง
-    let timeline = Object.keys(item.times).map(key => {
-        let val = item.times[key];
-        return {
-            id: key,
-            name: stepNames[key] || key.toUpperCase(), // ใช้ชื่อที่ map ไว้ หรือใช้ชื่อเดิม
-            status: typeof val === 'object' ? val.status : val,
-            timestamp: (typeof val === 'object' && val.timestamp) ? new Date(val.timestamp) : new Date(0)
-        };
-    });
+            let activeSteps = processArray.filter(p => p.status === "รันอยู่" || p.status === "จบงาน");
+            let pendingSteps = processArray.filter(p => p.status !== "รันอยู่" && p.status !== "จบงาน");
+            
+            activeSteps.sort((a, b) => a.startTime.getTime() - b.startTime.getTime());
+            let timeline = [...activeSteps, ...pendingSteps];
 
-    // เรียงลำดับตามเวลา (ถ้า timestamp เป็น 0 คือยังไม่ทำ จะถูกดันไปท้ายสุด)
-    timeline.sort((a, b) => {
-        if (a.timestamp.getTime() === 0 && b.timestamp.getTime() === 0) return 0;
-        if (a.timestamp.getTime() === 0) return 1;
-        if (b.timestamp.getTime() === 0) return -1;
-        return a.timestamp - b.timestamp;
-    });
+            let gridHtml = timeline.map((step, i) => {
+                let cls = "detail-step-card pending";
+                let statusText = "📭 ยังไม่เริ่ม";
+                
+                if(step.status === "จบงาน") { cls = "detail-step-card done"; statusText = "🟢 COMPLETED"; }
+                else if(step.status === "รันอยู่") { cls = "detail-step-card wip"; statusText = "⚡ PROCESSING"; }
 
-    // 3. แสดงผลใน Modal
-    let gridHtml = timeline.map(step => {
-        let cls = "detail-step-card pending";
-        let statusText = "📭 ยังไม่เริ่ม";
-        
-        if(step.status === "จบงาน") { cls = "detail-step-card done"; statusText = "🟢 COMPLETED"; }
-        else if(step.status === "รันอยู่") { cls = "detail-step-card wip"; statusText = "⚡ PROCESSING"; }
+                let startStr = formatDate(step.startTime);
+                let endStr = step.status === "จบงาน" ? formatDate(step.endTime) : "-"; 
+                let sequenceNum = (step.status === "รันอยู่" || step.status === "จบงาน") ? (i + 1) : "-";
 
-        // เปลี่ยนจากเดิมเป็นโค้ดนี้:
-let timeStr = "-";
-if (step.timestamp && step.timestamp.getTime() > 0) {
-    // ดึงเวลาจาก timestamp ที่ได้มา
-    let h = step.timestamp.getHours().toString().padStart(2, '0');
-    let m = step.timestamp.getMinutes().toString().padStart(2, '0');
-    
-    // แสดงผล "วันที่ปัจจุบัน + เวลา" (เพื่อให้เห็นชัดว่างานเสร็จวันนี้กี่โมง)
-    timeStr = "25/05/2026 " + h + ":" + m;
-}
+                return `
+                    <div class="${cls}">
+                        <div class="seq-badge">${sequenceNum}</div>
+                        <div style="font-weight: bold; font-size: 13px; margin-bottom: 4px;">${step.name}</div>
+                        <div style="font-size: 11px; margin-bottom: 4px;">${statusText}</div>
+                        
+                        <div class="time-box">
+                            <div><span style="color:#cbd5e1;">เริ่ม:</span><br/>${startStr}</div>
+                            <div style="text-align:right;"><span style="color:#cbd5e1;">จบ:</span><br/>${endStr}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
 
-        return `
-            <div class="${cls}">
-                <div style="font-weight: bold; font-size: 13px; margin-bottom: 4px;">${step.name}</div>
-                <div style="font-size: 11px; margin-bottom: 4px;">${statusText}</div>
-                <div style="font-size: 10px; color: #94a3b8;">⏰ ${timeStr}</div>
-            </div>
-        `;
-    }).join('');
+            document.getElementById('modalTimelineGrid').innerHTML = gridHtml;
+            document.getElementById('detailModal').style.display = 'flex';
+        }
 
-    document.getElementById('modalTimelineGrid').innerHTML = gridHtml;
-    document.getElementById('detailModal').style.display = 'flex';
-}
         function closeModal() { document.getElementById('detailModal').style.display = 'none'; }
-        
+
         function filterTable() {
             let input = document.getElementById("searchInput").value.toUpperCase();
             let rows = document.getElementById("tableBody").getElementsByTagName("tr");
@@ -298,6 +352,55 @@ if (step.timestamp && step.timestamp.getTime() > 0) {
                 let text = rows[i].textContent || rows[i].innerText;
                 rows[i].style.display = text.toUpperCase().includes(input) ? "" : "none";
             }
+        }
+
+        function sortTable(column) {
+            if (sortCol === column) {
+                sortAsc = !sortAsc;
+            } else {
+                sortCol = column;
+                sortAsc = true;
+            }
+            
+            globalCachedStore.sort((a, b) => {
+                let valA = a[column];
+                let valB = b[column];
+                
+                if (typeof valA === 'string') valA = valA.toLowerCase();
+                if (typeof valB === 'string') valB = valB.toLowerCase();
+                
+                if (valA < valB) return sortAsc ? -1 : 1;
+                if (valA > valB) return sortAsc ? 1 : -1;
+                return 0;
+            });
+            
+            renderTableDashboard(globalCachedStore);
+        }
+
+        function exportToCSV() {
+            if(globalCachedStore.length === 0) {
+                alert("ไม่มีข้อมูลสำหรับ Export");
+                return;
+            }
+            
+            let headers = ["วันที่ลงคิว", "Order No", "Part Name", "Part No", "Mac No", "Category", "Total Qty", "FG Qty", "NG Qty"];
+            let csvContent = "data:text/csv;charset=utf-8,\uFEFF" + headers.join(",") + "\n";
+            
+            globalCachedStore.forEach(row => {
+                let r = [
+                    row.date || "", row.orderNo || "", `"${row.partName || ""}"`, row.partNo || "", 
+                    row.macNo || "", row.category || "", row.totalQty || 0, row.fgQty || 0, row.ngQty || 0
+                ];
+                csvContent += r.join(",") + "\n";
+            });
+            
+            let encodedUri = encodeURI(csvContent);
+            let link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "Production_Report.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
     </script>
 </body>
