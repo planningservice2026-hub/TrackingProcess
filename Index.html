@@ -308,7 +308,8 @@
                             document.getElementById('s_order_no').value = chunks[2];
                             document.getElementById('s_qty').value = chunks[3];
                             document.getElementById('s_mac_no').value = chunks[4];
-                            document.getElementById('s_date').value = new Date().toLocaleDateString('th-TH');
+                            // เปลี่ยนจาก 'th-TH' เป็น 'en-GB' เพื่อบังคับให้แสดงเป็น วัน/เดือน/ปี ค.ศ. (เช่น 27/05/2026)
+                            document.getElementById('s_date').value = new Date().toLocaleDateString('en-GB');
                             
                             if (resData.exists) {
                                 highlightSavedProcesses(resData.savedProcesses, 'start');
@@ -411,8 +412,9 @@
             showLoader("RECORDING START DATA...");
 
                 // สร้างตัวแปร Timestamp รวมที่นี่
-            const now = new Date();
-            const timestamp = now.toLocaleDateString('th-TH') + " " + now.toLocaleTimeString('th-TH', { hour12: false });
+                // เปลี่ยนมาส่งเป็นรูปแบบ ISO String สากล (คอมพิวเตอร์เข้าใจตรงกันทั่วโลก และเป็น ค.ศ. 100%)
+                const now = new Date();
+                const timestamp = now.toISOString(); // ผลลัพธ์จะเป็นฟอร์แมต ค.ศ. เช่น "2026-05-27T03:32:00.000Z"
             
             var payload = {
                 part_name: document.getElementById('s_part_name').value.toUpperCase(),
