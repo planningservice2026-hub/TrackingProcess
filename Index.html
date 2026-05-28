@@ -41,23 +41,16 @@
         .btn-menu-end:hover { background-color: #f8fafc; }
         .btn-menu:active { transform: scale(0.99); }
         .btn-menu span.desc { display: block; font-size: 12px; font-weight: 400; color: #64748b; margin-top: 4px; }
-        .section-title {
-            font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; margin-bottom: 10px;
-            display: flex; align-items: center; gap: 6px;
-        }
+        .section-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
         .input-box-wrapper { background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 16px; border-radius: 12px; margin-bottom: 20px; }
-       input[type=text], input[type=number], select {
+        input[type=text], input[type=number], select {
             width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #cbd5e1; background-color: #ffffff; color: #0f172a;
-            font-size: 16px; font-weight: 600; outline: none; transition: all 0.15s ease;
-            text-transform: uppercase; /* เพิ่มบรรทัดนี้: บังคับแสดงผลตัวใหญ่ */
+            font-size: 16px; font-weight: 600; outline: none; transition: all 0.15s ease; text-transform: uppercase;
         }
         input[type=text]:focus, input[type=number]:focus, select:focus { border-color: #0284c7; box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1); }
-        .input-disabled { background-color: #f1f5f9; color: #64748b; border-color: #e2e8f0; cursor: not-allowed; text-transform: uppercase; } /* เพิ่ม text-transform */
+        .input-disabled { background-color: #f1f5f9; color: #64748b; border-color: #e2e8f0; cursor: not-allowed; text-transform: uppercase; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
-        .btn-action {
-            width: 100%; padding: 16px; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer;
-            transition: all 0.2s ease; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-        }
+        .btn-action { width: 100%; padding: 16px; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
         .btn-action-start { background-color: #0284c7; }
         .btn-action-start:hover { background-color: #0369a1; }
         .btn-action-end { background-color: #0f172a; }
@@ -67,16 +60,10 @@
         .btn-back { background-color: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 8px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
         .btn-back:hover { background-color: #e2e8f0; color: #1e293b; }
         .camera-container { border-bottom: 1px dashed #e2e8f0; padding-bottom: 16px; margin-bottom: 20px; text-align: center; }
-        .btn-camera {
-            background-color: #ffffff; color: #475569; border: 1px solid #cbd5e1; padding: 10px 16px; border-radius: 8px;
-            font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
-        }
+        .btn-camera { background-color: #ffffff; color: #475569; border: 1px solid #cbd5e1; padding: 10px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
         .btn-camera:hover { background-color: #f8fafc; border-color: #94a3b8; }
         .camera-stream-box { margin-top: 12px; border-radius: 12px; overflow: hidden; border: 2px solid #cbd5e1; background-color: #000000; }
-        #loader {
-            position: fixed; inset: 0; background-color: rgba(255, 255, 255, 0.9);
-            z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
-        }
+        #loader { position: fixed; inset: 0; background-color: rgba(255, 255, 255, 0.9); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; }
         .hidden { display: none !important; }
         .spinner { width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top-color: #0284c7; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -102,7 +89,7 @@
         <div id="welcomePage" class="page active">
             <div style="margin-bottom: 24px; text-align: center;">
                 <h3 style="font-size: 16px; font-weight: 700; color: #0f172a;">ระบบบันทึกเวลาและสถานะการผลิต</h3>
-                <p style="font-size: 12px; color: #64748b; margin-top: 2px;">Select operation sequence to update  log</p>
+                <p style="font-size: 12px; color: #64748b; margin-top: 2px;">Select operation sequence to update log</p>
             </div>
             <button onclick="navigateTo('startPage')" class="btn-menu btn-menu-start">
                 <div>
@@ -229,15 +216,16 @@
     </div>
 
     <script>
-        const BACKEND_URL = "https://script.google.com/macros/s/AKfycbyJBdXKn1jnXlIsMMu3i5ofAbG-bPHPMAsEuiTfRxbM9Hn_vJ_carm8HwcQoeaklDjI/exec"; 
+        const BACKEND_URL = "https://script.google.com/macros/s/AKfycbz3KzGf6XpOtcUcMXpp1Tuur19Nh2GtzAl_SHYlLrLPasEzI35z6WeNDZmdmaa1iJWb/exec"; 
 
         let html5QrcodeScanner = null;
         
-      function navigateTo(pageId) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById(pageId).classList.add('active');
-    closeCamera();
-        } // 🔥 เพิ่มวงเล็บปิดตรงนี้ครับ!
+        function navigateTo(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            closeCamera();
+        }
+
         function toggleCameraArea(mode) {
             const boxId = mode === 'start' ? 'start_camera_box' : 'end_camera_box';
             const readerId = mode === 'start' ? 'start_reader' : 'end_reader';
@@ -276,7 +264,10 @@
             }
         }
 
-        function triggerInputEvent(value, mode) { processRawData(value, mode); }
+        function triggerInputEvent(value, mode) { 
+            processRawData(value, mode);
+        }
+
         function manualTrigger(mode) {
             const inputId = mode === 'start' ? 'start_barcode_input' : 'end_barcode_input';
             processRawData(document.getElementById(inputId).value, mode);
@@ -286,9 +277,8 @@
             rawText = rawText.toUpperCase();
             if (!rawText || rawText.trim() === "") return;
             let chunks = rawText.split('|').map(item => item.trim()).filter(item => item !== "");
-            
             if (chunks.length === 5) {
-                showLoader("CONNECTING  CLOUD...");
+                showLoader("CONNECTING CLOUD...");
                 resetDropdownStyles();
                 
                 fetch(BACKEND_URL, {
@@ -301,15 +291,14 @@
                     hideLoader();
                     if(response.status === "success") {
                         var resData = response.data;
+  
                         if (mode === 'start') {
                             document.getElementById('s_part_name').value = chunks[0];
                             document.getElementById('s_part_no').value = chunks[1];
                             document.getElementById('s_order_no').value = chunks[2];
                             document.getElementById('s_qty').value = chunks[3];
                             document.getElementById('s_mac_no').value = chunks[4];
-                            // เปลี่ยนจาก 'th-TH' เป็น 'en-GB' เพื่อบังคับให้แสดงเป็น วัน/เดือน/ปี ค.ศ. (เช่น 27/05/2026)
                             document.getElementById('s_date').value = new Date().toLocaleDateString('en-GB');
-                            
                             if (resData.exists) {
                                 highlightSavedProcesses(resData.savedProcesses, 'start');
                             }
@@ -321,7 +310,6 @@
                             
                             if (resData.exists) {
                                 highlightSavedProcesses(resData.savedProcesses, 'end');
-                                
                                 var dropdown = document.getElementById('end_process_select');
                                 var allowed = resData.availableEndProcesses || [];
                                 for (var i = 1; i < dropdown.options.length; i++) {
@@ -373,7 +361,6 @@
                 if(eEl) { eEl.style.color = ""; eEl.style.backgroundColor = ""; }
             });
             
-            // ... (keep original reset strings as they were)
             document.getElementById('s_opt_mac_starttime').innerText = "🏭 เริ่มเดินเครื่องจักร (G)";
             document.getElementById('s_opt_punch1_starttime').innerText = "💮 เริ่ม Punch 1 (I)";
             document.getElementById('s_opt_punch2_starttime').innerText = "💮 เริ่ม Punch 2 (K)";
@@ -384,7 +371,6 @@
             document.getElementById('s_opt_cut3_starttime').innerText = "✂️ เริ่ม Cut 3 (U)";
             document.getElementById('s_opt_cut4_starttime').innerText = "✂️ เริ่ม Cut 4 (W)";
             document.getElementById('s_opt_hotstamp_starttime').innerText = "🔥 เริ่ม Hotstamp (Y)";
-            
             document.getElementById('e_opt_mac_endtime').innerText = "🏭 จบเดินเครื่องจักร (H)";
             document.getElementById('e_opt_punch1_endtime').innerText = "💮 จบ Punch 1 (J)";
             document.getElementById('e_opt_punch2_endtime').innerText = "💮 จบ Punch 2 (L)";
@@ -402,147 +388,120 @@
             document.getElementById('btn_submit_end').disabled = isLock;
         }
 
-function submitStartData() {
-    var rawProc = document.getElementById('start_process_select').value;
-    if(!rawProc) { alert("⚠️ กรุณาเลือกขั้นตอนปฏิบัติงานก่อนทำการส่งข้อมูล!"); return; }
-    if(!document.getElementById('s_order_no').value) { alert("⚠️ ยังไม่ได้ดึงข้อมูลบาร์โค้ดใบงาน!"); return; }
-    
-    // ทำความสะอาดข้อมูล
-    var proc = rawProc.trim().toLowerCase(); 
+        function submitStartData() {
+            var rawProc = document.getElementById('start_process_select').value;
+            if(!rawProc) { alert("⚠️ กรุณาเลือกขั้นตอนปฏิบัติงานก่อนทำการส่งข้อมูล!"); return; }
+            if(!document.getElementById('s_order_no').value) { alert("⚠️ ยังไม่ได้ดึงข้อมูลบาร์โค้ดใบงาน!"); return; }
+            
+            var proc = rawProc.trim().toLowerCase();
+            setLockSubmitState(true);
+            showLoader("RECORDING START DATA...");
 
-    setLockSubmitState(true);
-    showLoader("RECORDING START DATA...");
+            var payload = {
+                part_name: document.getElementById('s_part_name').value.toUpperCase(),
+                part_no: document.getElementById('s_part_no').value.toUpperCase(),
+                order_no: document.getElementById('s_order_no').value.trim().toUpperCase(),
+                qty: document.getElementById('s_qty').value,
+                mac_no: document.getElementById('s_mac_no').value.toUpperCase(),
+                timestamp: new Date().toISOString(),
+                process_column: proc
+            };
 
-    var payload = {
-        part_name: document.getElementById('s_part_name').value.toUpperCase(),
-        part_no: document.getElementById('s_part_no').value.toUpperCase(),
-        order_no: document.getElementById('s_order_no').value.trim().toUpperCase(),
-        qty: document.getElementById('s_qty').value,
-        mac_no: document.getElementById('s_mac_no').value.toUpperCase(),
-        timestamp: new Date().toISOString(),
-        process_column: proc
-    };
-
-    fetch(BACKEND_URL, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain" },
-        body: JSON.stringify({ action: "recordStartData", payload: payload })
-    })
-    .then(res => res.json())
-    .then(res => {
-        hideLoader();
-        if(res.status === "success") {
-            alert("✅ บันทึกเวลาเริ่มงานเข้าสู่คลาวด์เรียบร้อย!");
-            clearAndBack();
-        } else {
-            alert("❌ ERROR: " + res.message);
-            setLockSubmitState(false);
+            fetch(BACKEND_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain" },
+                body: JSON.stringify({ action: "recordStartData", payload: payload })
+            })
+            .then(res => res.json())
+            .then(res => {
+                hideLoader();
+                if(res.status === "success") {
+                    alert("✅ บันทึกเวลาเริ่มงานเข้าสู่คลาวด์เรียบร้อย!");
+                    clearAndBack();
+                } else {
+                    alert("❌ ERROR: " + res.message);
+                    setLockSubmitState(false);
+                }
+            })
+            .catch(err => { hideLoader(); setLockSubmitState(false); alert("❌ TRANSMISSION ERROR: " + err); });
         }
-    })
-    .catch(err => { hideLoader(); setLockSubmitState(false); alert("❌ TRANSMISSION ERROR: " + err); });
-}
 
-function submitEndData() {
-    var rawProc = document.getElementById('end_process_select').value;
-    if(!rawProc) { alert("⚠️ กรุณาเลือกขั้นตอนปิดงานก่อนทำการส่งข้อมูล!"); return; }
-    if(!document.getElementById('e_order_no').value) { alert("⚠️ ยังไม่ได้ดึงข้อมูลบาร์โค้ดใบงาน!"); return; }
-    
-    // ทำความสะอาดข้อมูล
-    var proc = rawProc.trim().toLowerCase();
+        function submitEndData() {
+            var rawProc = document.getElementById('end_process_select').value;
+            if(!rawProc) { alert("⚠️ กรุณาเลือกขั้นตอนปิดงานก่อนทำการส่งข้อมูล!"); return; }
+            if(!document.getElementById('e_order_no').value) { alert("⚠️ ยังไม่ได้ดึงข้อมูลบาร์โค้ดใบงาน!"); return; }
+            
+            var proc = rawProc.trim().toLowerCase();
+            setLockSubmitState(true);
+            showLoader("RECORDING COMPLETION DATA...");
 
-    setLockSubmitState(true);
-    showLoader("RECORDING COMPLETION DATA...");
+            var payload = {
+                order_no: document.getElementById('e_order_no').value.trim().toUpperCase(),
+                process_column: proc,
+                fg_qty: document.getElementById('e_fg').value,
+                ng_qty: document.getElementById('e_ng').value,
+                timestamp: new Date().toISOString()
+            };
 
-    var payload = {
-        order_no: document.getElementById('e_order_no').value.trim().toUpperCase(),
-        process_column: proc,
-        fg_qty: document.getElementById('e_fg').value,
-        ng_qty: document.getElementById('e_ng').value,
-        timestamp: new Date().toISOString()
-    };
-
-    fetch(BACKEND_URL, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain" },
-        body: JSON.stringify({ action: "recordEndData", payload: payload })
-    })
-    .then(res => res.json())
-    .then(res => {
-        hideLoader();
-        if(res.status === "success") {
-            alert("✅ บันทึกสรุปจบงานเรียบร้อย!");
-            clearAndBack();
-        } else {
-            alert("❌ ERROR: " + res.message);
-            setLockSubmitState(false);
+            fetch(BACKEND_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain" },
+                body: JSON.stringify({ action: "recordEndData", payload: payload })
+            })
+            .then(res => res.json())
+            .then(res => {
+                hideLoader();
+                if(res.status === "success") {
+                    alert("✅ บันทึกสรุปจบงานเรียบร้อย!");
+                    clearAndBack();
+                } else {
+                    alert("❌ ERROR: " + res.message);
+                    setLockSubmitState(false);
+                }
+            })
+            .catch(err => { 
+                hideLoader(); 
+                setLockSubmitState(false); 
+                alert("❌ DATABASE ERROR: " + err); 
+            });
         }
-    })
-    .catch(err => { 
-        hideLoader(); 
-        setLockSubmitState(false); 
-        alert("❌ DATABASE ERROR: " + err); 
-    });
-}
 
-        function showLoader(text) { document.getElementById('loader_text').innerText = text; document.getElementById('loader').classList.remove('hidden'); }
-        function hideLoader() { document.getElementById('loader').classList.add('hidden'); }
+        function showLoader(text) { 
+            document.getElementById('loader_text').innerText = text; 
+            document.getElementById('loader').classList.remove('hidden');
+        }
+        
+        function hideLoader() { 
+            document.getElementById('loader').classList.add('hidden');
+        }
         
         function clearAndBack() {
-    closeCamera();
-    document.getElementById('start_barcode_input').value = ''; 
-    document.getElementById('end_barcode_input').value = '';
-    document.getElementById('s_part_name').value = ''; 
-    document.getElementById('s_part_no').value = '';
-    document.getElementById('s_order_no').value = ''; 
-    document.getElementById('s_mac_no').value = '';
-    document.getElementById('s_qty').value = '';
-    document.getElementById('e_fg').value = ''; 
-    document.getElementById('e_ng').value = '';
-    document.getElementById('e_order_no').value = ''; 
-    document.getElementById('e_part_name').value = '';
-    document.getElementById('e_part_no').value = '';
-    document.getElementById('e_total_qty').value = '';
-    document.getElementById('start_process_select').value = ''; 
-    document.getElementById('end_process_select').value = '';
-    
-    // --- เพิ่มส่วนนี้เพื่อคืนค่าการแสดงผล Dropdown ให้ครบทุกรายการ ---
-    var endDropdown = document.getElementById('end_process_select');
-    for (var i = 0; i < endDropdown.options.length; i++) {
-        endDropdown.options[i].style.display = "block";
-    }
-    // ---------------------------------------------------------
+            closeCamera();
+            document.getElementById('start_barcode_input').value = ''; 
+            document.getElementById('end_barcode_input').value = '';
+            document.getElementById('s_part_name').value = ''; 
+            document.getElementById('s_part_no').value = '';
+            document.getElementById('s_order_no').value = ''; 
+            document.getElementById('s_mac_no').value = '';
+            document.getElementById('s_qty').value = '';
+            document.getElementById('e_fg').value = ''; 
+            document.getElementById('e_ng').value = '';
+            document.getElementById('e_order_no').value = ''; 
+            document.getElementById('e_part_name').value = '';
+            document.getElementById('e_part_no').value = '';
+            document.getElementById('e_total_qty').value = '';
+            document.getElementById('start_process_select').value = ''; 
+            document.getElementById('end_process_select').value = '';
+            
+            var endDropdown = document.getElementById('end_process_select');
+            for (var i = 0; i < endDropdown.options.length; i++) {
+                endDropdown.options[i].style.display = "block";
+            }
 
-    setLockSubmitState(false); 
-    resetDropdownStyles();
-    navigateTo('welcomePage');
-}
-// ฟังก์ชันกลางสำหรับส่งข้อมูล (ใช้แทนการเขียน fetch ซ้ำๆ)
-function sendData(action, payload, successMsg) {
-    showLoader("กำลังบันทึกข้อมูล..."); // เพิ่มตัวนี้ให้เห็นว่ามันเริ่มทำงาน
-    fetch(BACKEND_URL, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain" },
-        body: JSON.stringify({ action: action, payload: payload })
-    })
-    .then(res => res.json())
-    .then(res => {
-        hideLoader();
-        console.log("Response จากหลังบ้าน:", res); // 🔥 สำคัญมาก: ให้เปิด Console ดูว่า Google ตอบอะไรมา
-        
-        // ลองเปลี่ยนเงื่อนไขให้กว้างขึ้น เพื่อเช็กว่าสถานะเป็น success หรือไม่
-        if (res.status === "success" || res.status === "SUCCESS_START" || res.status === "SUCCESS_END") {
-            alert("✅ " + successMsg);
-            clearAndBack();
-        } else {
-            alert("❌ บันทึกไม่สำเร็จ: สถานะตอบกลับคือ " + res.status);
+            setLockSubmitState(false); 
+            resetDropdownStyles();
+            navigateTo('welcomePage');
         }
-    })
-    .catch(err => { 
-        hideLoader(); 
-        setLockSubmitState(false); 
-        alert("❌ เชื่อมต่อล้มเหลว (อาจติด CORS หรือ URL ผิด): " + err); 
-    });
-}
     </script>
 </body>
 </html>
