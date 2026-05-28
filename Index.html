@@ -425,7 +425,7 @@ function submitStartData() {
 
     fetch(BACKEND_URL, {
         method: "POST",
-        headers: { "Content-Type": "text/plain" }
+        headers: { "Content-Type": "text/plain" },
         body: JSON.stringify({ action: "recordStartData", payload: payload })
     })
     .then(res => res.json())
@@ -463,7 +463,7 @@ function submitEndData() {
 
     fetch(BACKEND_URL, {
         method: "POST",
-        headers: { "Content-Type": "text/plain" }
+        headers: { "Content-Type": "text/plain" },
         body: JSON.stringify({ action: "recordEndData", payload: payload })
     })
     .then(res => res.json())
