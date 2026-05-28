@@ -518,26 +518,29 @@ function submitEndData() {
 }
 // ฟังก์ชันกลางสำหรับส่งข้อมูล (ใช้แทนการเขียน fetch ซ้ำๆ)
 function sendData(action, payload, successMsg) {
+    showLoader("กำลังบันทึกข้อมูล..."); // เพิ่มตัวนี้ให้เห็นว่ามันเริ่มทำงาน
     fetch(BACKEND_URL, {
         method: "POST",
-        headers: { "Content-Type": "text/plain" }, // 🔥 เพิ่มคอมมา (,) ตรงนี้ครับ
+        headers: { "Content-Type": "text/plain" },
         body: JSON.stringify({ action: action, payload: payload })
     })
     .then(res => res.json())
     .then(res => {
         hideLoader();
-        // ตรวจสอบสถานะการทำงานจากหลังบ้าน
-        if (res.status === "SUCCESS_START" || res.status === "SUCCESS_END") {
+        console.log("Response จากหลังบ้าน:", res); // 🔥 สำคัญมาก: ให้เปิด Console ดูว่า Google ตอบอะไรมา
+        
+        // ลองเปลี่ยนเงื่อนไขให้กว้างขึ้น เพื่อเช็กว่าสถานะเป็น success หรือไม่
+        if (res.status === "success" || res.status === "SUCCESS_START" || res.status === "SUCCESS_END") {
             alert("✅ " + successMsg);
             clearAndBack();
         } else {
-            alert("❌ บันทึกไม่สำเร็จ: " + res.status);
+            alert("❌ บันทึกไม่สำเร็จ: สถานะตอบกลับคือ " + res.status);
         }
     })
     .catch(err => { 
         hideLoader(); 
         setLockSubmitState(false); 
-        alert("❌ ERROR: " + err); 
+        alert("❌ เชื่อมต่อล้มเหลว (อาจติด CORS หรือ URL ผิด): " + err); 
     });
 }
     </script>
